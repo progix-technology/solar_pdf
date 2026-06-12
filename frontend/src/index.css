@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f4f6f8;
+  font-family: 'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Material UI handles most of the rest, ensuring premium feel */
