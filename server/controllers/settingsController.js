@@ -45,7 +45,8 @@ const updateSettings = async (req, res) => {
     settings.termsAndConditions = termsAndConditions || settings.termsAndConditions;
 
     if (req.file) {
-      settings.logoUrl = `/${req.file.path.replace(/\\/g, '/')}`;
+      // req.file.path is the full Cloudinary URL when using multer-storage-cloudinary
+      settings.logoUrl = req.file.path;
     }
 
     const updatedSettings = await settings.save();

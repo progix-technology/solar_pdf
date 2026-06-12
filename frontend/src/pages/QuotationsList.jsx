@@ -8,6 +8,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/axiosConfig';
+import html2pdf from 'html2pdf.js';
 
 const QuotationsList = () => {
   const [quotations, setQuotations] = useState([]);
@@ -40,18 +41,32 @@ const QuotationsList = () => {
     }
   };
 
-  const openPdf = async (id) => {
+  const openPdf = async (id, quotationNumber) => {
     try {
-      const response = await api.get(`/quotations/${id}/pdf`, { responseType: 'blob' });
-      const file = new Blob([response.data], { type: 'application/pdf' });
-      const fileURL = URL.createObjectURL(file);
-      window.open(fileURL, '_blank');
+      const htmlResponse = await api.get(`/quotations/${id}/pdf`);
+      const htmlContent = htmlResponse.data;
+
+      const container = document.createElement('div');
+      container.innerHTML = htmlContent;
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+
+      const opt = {
+        margin:       0.5,
+        filename:     `Quotation_${quotationNumber}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().set(opt).from(container).save();
+      document.body.removeChild(container);
     } catch (error) {
-      console.error('Error fetching PDF:', error);
-      if (error.response && error.response.data instanceof Blob) {
-        const text = await error.response.data.text();
-        const errData = JSON.parse(text);
-        alert('Server Error: ' + (errData.error || errData.message || text));
+      console.error('Error generating PDF:', error);
+      if (error.response && typeof error.response.data === 'string') {
+        alert('Server Error: ' + error.response.data);
       } else {
         alert('Failed to generate or load the PDF: ' + (error.response?.data?.message || error.message));
       }
@@ -103,7 +118,7 @@ const QuotationsList = () => {
                     <IconButton color="primary" onClick={() => navigate(`/edit-quotation/${q._id}`)} title="Edit">
                       <EditIcon />
                     </IconButton>
-                    <IconButton color="success" onClick={() => openPdf(q._id)} title="Download/View PDF">
+                    <IconButton color="success" onClick={() => openPdf(q._id, q.quotationNumber)} title="Download/View PDF">
                       <DownloadIcon />
                     </IconButton>
                     <IconButton color="error" onClick={() => handleDelete(q._id)} title="Delete">

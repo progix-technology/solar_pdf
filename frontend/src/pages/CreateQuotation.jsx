@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import html2pdf from 'html2pdf.js';
 import {
   Box, Typography, TextField, Button, Paper, Grid, Alert,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Divider
@@ -213,23 +214,34 @@ const CreateQuotation = () => {
 
       if (res.data._id) {
         try {
-          const pdfResponse = await api.get(`/quotations/${res.data._id}/pdf`, { responseType: 'blob' });
-          const file = new Blob([pdfResponse.data], { type: 'application/pdf' });
-          const fileURL = URL.createObjectURL(file);
-          window.open(fileURL, '_blank');
+          // The backend now returns RAW HTML string instead of a PDF Blob
+          const htmlResponse = await api.get(`/quotations/${res.data._id}/pdf`);
+          const htmlContent = htmlResponse.data;
+
+          // Create a temporary hidden container to hold the HTML
+          const container = document.createElement('div');
+          container.innerHTML = htmlContent;
+          container.style.position = 'absolute';
+          container.style.left = '-9999px';
+          container.style.top = '0';
+          document.body.appendChild(container);
+
+          // Use html2pdf.js to generate the PDF
+          const opt = {
+            margin:       0.5,
+            filename:     `Quotation_${res.data.quotationNumber}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+          };
+
+          // Generate, download, and clean up
+          await html2pdf().set(opt).from(container).save();
+          document.body.removeChild(container);
+
         } catch (pdfErr) {
-          console.error('Error fetching newly generated PDF:', pdfErr);
-          if (pdfErr.response && pdfErr.response.data instanceof Blob) {
-            const text = await pdfErr.response.data.text();
-            try {
-              const errData = JSON.parse(text);
-              alert('Server Error during PDF fetch: ' + (errData.error || errData.message || text));
-            } catch(e) {
-              alert('Server Error during PDF fetch: ' + text);
-            }
-          } else {
-            alert('Failed to fetch the newly generated PDF: ' + (pdfErr.response?.data?.message || pdfErr.message));
-          }
+          console.error('Error generating PDF on frontend:', pdfErr);
+          alert('Failed to generate the PDF: ' + (pdfErr.response?.data?.message || pdfErr.message));
         }
       }
 

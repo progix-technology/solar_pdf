@@ -1,5 +1,3 @@
-const puppeteer = require('puppeteer-core');
-const chromium = require('@sparticuz/chromium').default || require('@sparticuz/chromium');
 const handlebars = require('handlebars');
 const path = require('path');
 const fs = require('fs');
@@ -24,41 +22,14 @@ const generatePDFBuffer = async (templateContent, data) => {
     const template = handlebars.compile(templateContent);
     const html = template(data);
 
-    // Launch Puppeteer with Chromium for serverless/Render environments
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
-    });
-
-    const page = await browser.newPage();
-
-    // Set HTML content
-    await page.setContent(html, {
-      waitUntil: 'networkidle0',
-    });
-
-    // Generate PDF Buffer with proper print-quality settings
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '20px',
-        bottom: '20px',
-        left: '20px',
-        right: '20px',
-      },
-    });
-
-    await browser.close();
-
-    return pdfBuffer;
+    // Return the raw HTML string instead of generating a PDF on the backend
+    return html;
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    console.error('Error generating HTML:', error);
     throw error;
   }
 };
 
-module.exports = { generatePDFBuffer };
+module.exports = {
+  generatePDFBuffer,
+};

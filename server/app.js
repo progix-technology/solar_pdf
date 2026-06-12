@@ -14,7 +14,7 @@ app.use(cors({
   origin: process.env.CLIENT_URL || '*',
 }));
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// We no longer serve local uploads since we use Cloudinary
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));

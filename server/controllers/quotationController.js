@@ -167,18 +167,12 @@ const downloadQuotationPDF = async (req, res) => {
       company: settings.toObject ? settings.toObject() : settings
     };
 
-    const pdfBuffer = await generatePDFBuffer(template.content, pdfData);
+    const htmlString = await generatePDFBuffer(template.content, pdfData);
 
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `inline; filename="Quotation_${quotation.quotationNumber}.pdf"`,
-      'Content-Length': pdfBuffer.length
-    });
-
-    res.send(pdfBuffer);
+    res.send(htmlString);
   } catch (error) {
     console.error('Download Error:', error);
-    res.status(500).json({ message: 'Failed to generate PDF', error: error ? error.toString() : 'Unknown Error', stack: error ? error.stack : '' });
+    res.status(500).json({ message: 'Failed to generate HTML', error: error ? error.toString() : 'Unknown Error', stack: error ? error.stack : '' });
   }
 };
 
