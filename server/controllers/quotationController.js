@@ -162,12 +162,26 @@ const downloadQuotationPDF = async (req, res) => {
       settings = { companyName: 'My Company', logoUrl: '' };
     }
 
+    const companyData = settings.toObject ? settings.toObject() : { ...settings };
+    if (companyData.logoUrl && !companyData.logoUrl.startsWith('http://') && !companyData.logoUrl.startsWith('https://')) {
+      companyData.logoUrl = `${req.protocol}://${req.get('host')}${companyData.logoUrl.startsWith('/') ? '' : '/'}${companyData.logoUrl}`;
+    }
+
     const pdfData = {
       ...quotation.toObject(),
-      company: settings.toObject ? settings.toObject() : settings
+      company: companyData
     };
 
-    const htmlString = await generatePDFBuffer(template.content, pdfData);
+    // Clean any hardcoded backend URLs from logo image src in the template
+    let templateContent = template.content;
+    templateContent = templateContent.replace(/src="https?:\/\/[a-zA-Z0-9.-]+(:\d+)?\{\{company\.logoUrl\}\}"/g, 'src="{{company.logoUrl}}"');
+
+    // Add crossorigin="anonymous" to the image tags to avoid tainted canvas errors on the frontend
+    if (!/crossorigin=/i.test(templateContent)) {
+      templateContent = templateContent.replace(/<img\s+/gi, '<img crossorigin="anonymous" ');
+    }
+
+    const htmlString = await generatePDFBuffer(templateContent, pdfData);
 
     res.send(htmlString);
   } catch (error) {
