@@ -13,7 +13,8 @@ const HeaderImage = () => {
       try {
         const { data } = await api.get('/settings');
         if (data.logoUrl) {
-          setCurrentImage(`http://localhost:5001${data.logoUrl}`);
+          const baseUrl = api.defaults.baseURL.replace('/api', '');
+          setCurrentImage(`${baseUrl}${data.logoUrl}`);
         }
       } catch (err) {
         console.error('Failed to fetch settings', err);
@@ -47,7 +48,8 @@ const HeaderImage = () => {
       });
       setSuccessMsg('Header Image updated successfully!');
       if (res.data.logoUrl) {
-        setCurrentImage(`http://localhost:5001${res.data.logoUrl}`);
+        const baseUrl = api.defaults.baseURL.replace('/api', '');
+        setCurrentImage(`${baseUrl}${res.data.logoUrl}`);
       }
     } catch (err) {
       setErrorMsg(err.response?.data?.message || 'Failed to update image');
