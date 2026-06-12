@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer-core');
-const chromium = require('@sparticuz/chromium');
+const chromium = require('@sparticuz/chromium').default || require('@sparticuz/chromium');
 const handlebars = require('handlebars');
 const path = require('path');
 const fs = require('fs');
