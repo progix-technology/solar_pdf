@@ -298,13 +298,7 @@ const CreateQuotation = () => {
             <Grid item xs={12} md={6}>
               <TextField fullWidth type="date" label="Quotation Date" name="quotationDate" InputLabelProps={{ shrink: true }} required value={formData.quotationDate} onChange={handleChange} />
             </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField select fullWidth label="Template" name="templateId" required value={formData.templateId} onChange={handleChange}>
-                {templates.map(t => (
-                  <MenuItem key={t._id} value={t._id}>{t.name}</MenuItem>
-                ))}
-              </TextField>
-            </Grid>
+
           </Grid>
         </Paper>
 
