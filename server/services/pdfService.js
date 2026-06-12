@@ -57,7 +57,7 @@ const generatePDFBuffer = async (templateContent, data) => {
     return pdfBuffer;
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw new Error('Failed to generate PDF');
+    throw error;
   }
 };
 
