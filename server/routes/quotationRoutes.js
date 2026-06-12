@@ -6,6 +6,7 @@ const {
   createQuotation,
   updateQuotation,
   deleteQuotation,
+  downloadQuotationPDF,
 } = require('../controllers/quotationController');
 const { protect } = require('../middleware/authMiddleware');
 
