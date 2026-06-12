@@ -178,7 +178,7 @@ const downloadQuotationPDF = async (req, res) => {
     res.send(pdfBuffer);
   } catch (error) {
     console.error('Download Error:', error);
-    res.status(500).json({ message: 'Failed to generate PDF' });
+    res.status(500).json({ message: 'Failed to generate PDF', error: error.message, stack: error.stack });
   }
 };
 

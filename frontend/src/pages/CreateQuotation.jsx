@@ -219,6 +219,17 @@ const CreateQuotation = () => {
           window.open(fileURL, '_blank');
         } catch (pdfErr) {
           console.error('Error fetching newly generated PDF:', pdfErr);
+          if (pdfErr.response && pdfErr.response.data instanceof Blob) {
+            const text = await pdfErr.response.data.text();
+            try {
+              const errData = JSON.parse(text);
+              alert('Server Error during PDF fetch: ' + (errData.error || errData.message || text));
+            } catch(e) {
+              alert('Server Error during PDF fetch: ' + text);
+            }
+          } else {
+            alert('Failed to fetch the newly generated PDF: ' + (pdfErr.response?.data?.message || pdfErr.message));
+          }
         }
       }
 

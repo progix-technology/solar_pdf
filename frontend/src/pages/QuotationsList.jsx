@@ -48,7 +48,13 @@ const QuotationsList = () => {
       window.open(fileURL, '_blank');
     } catch (error) {
       console.error('Error fetching PDF:', error);
-      alert('Failed to generate or load the PDF.');
+      if (error.response && error.response.data instanceof Blob) {
+        const text = await error.response.data.text();
+        const errData = JSON.parse(text);
+        alert('Server Error: ' + (errData.error || errData.message || text));
+      } else {
+        alert('Failed to generate or load the PDF: ' + (error.response?.data?.message || error.message));
+      }
     }
   };
 
