@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 const handlebars = require('handlebars');
 const path = require('path');
 const fs = require('fs');
@@ -23,10 +24,13 @@ const generatePDFBuffer = async (templateContent, data) => {
     const template = handlebars.compile(templateContent);
     const html = template(data);
 
-    // Launch Puppeteer
+    // Launch Puppeteer with Chromium for serverless/Render environments
     const browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
     });
 
     const page = await browser.newPage();
