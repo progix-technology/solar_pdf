@@ -206,10 +206,10 @@ const CreateQuotation = () => {
       let res;
       if (id) {
         res = await api.put(`/quotations/${id}`, payload);
-        setSuccessMsg('PDF Updated successfully! Opening in a new tab...');
+        setSuccessMsg('PDF Updated successfully! Downloading PDF...');
       } else {
         res = await api.post('/quotations', payload);
-        setSuccessMsg('PDF Generated successfully! Opening in a new tab...');
+        setSuccessMsg('PDF Generated successfully! Downloading PDF...');
       }
 
       if (res.data._id) {
@@ -226,12 +226,23 @@ const CreateQuotation = () => {
           container.style.top = '0';
           document.body.appendChild(container);
 
+          // Wait for all images inside the container to load before capturing
+          const images = container.getElementsByTagName('img');
+          const imagePromises = Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          });
+          await Promise.all(imagePromises);
+
           // Use html2pdf.js to generate the PDF
           const opt = {
             margin:       0.5,
             filename:     `Quotation_${res.data.quotationNumber}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
+            html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
           };
 

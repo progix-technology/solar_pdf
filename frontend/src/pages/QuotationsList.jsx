@@ -53,11 +53,22 @@ const QuotationsList = () => {
       container.style.top = '0';
       document.body.appendChild(container);
 
+      // Wait for all images inside the container to load before capturing
+      const images = container.getElementsByTagName('img');
+      const imagePromises = Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      });
+      await Promise.all(imagePromises);
+
       const opt = {
         margin:       0.5,
         filename:     `Quotation_${quotationNumber}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
 
