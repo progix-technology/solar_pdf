@@ -11,7 +11,20 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || '*',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    
+    const isLocalhost = origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:');
+    const isVercel = origin.endsWith('.vercel.app');
+    const isConfiguredClient = process.env.CLIENT_URL && origin === process.env.CLIENT_URL;
+    
+    if (isLocalhost || isVercel || isConfiguredClient || !process.env.CLIENT_URL) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 app.use(express.json());
 // We no longer serve local uploads since we use Cloudinary
