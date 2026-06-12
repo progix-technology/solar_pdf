@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Paper, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, IconButton, Button
+  TableContainer, TableHead, TableRow, IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import PrintIcon from '@mui/icons-material/Print';
+import html2pdf from 'html2pdf.js';
 import api from '../utils/axiosConfig';
 
 const GeneratedQuotations = () => {
@@ -35,8 +36,42 @@ const GeneratedQuotations = () => {
     }
   };
 
-  const openPdf = (pdfUrl) => {
-    window.open(`http://localhost:5000${pdfUrl}`, '_blank');
+  const openPdf = async (id, quotationNumber) => {
+    try {
+      const htmlResponse = await api.get(`/quotations/${id}/pdf`);
+      const htmlContent = htmlResponse.data;
+
+      const container = document.createElement('div');
+      container.innerHTML = htmlContent;
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+
+      const images = container.getElementsByTagName('img');
+      const imagePromises = Array.from(images).map((img) => {
+        if (img.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      });
+      await Promise.all(imagePromises);
+
+      const opt = {
+        margin: 0.5,
+        filename: `Quotation_${quotationNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().set(opt).from(container).save();
+      document.body.removeChild(container);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate or load the PDF: ' + (error.response?.data?.message || error.message));
+    }
   };
 
   return (
@@ -64,10 +99,10 @@ const GeneratedQuotations = () => {
                 <TableCell>{new Date(q.quotationDate).toLocaleDateString()}</TableCell>
                 <TableCell>₹{q.grandTotal.toFixed(2)}</TableCell>
                 <TableCell align="right">
-                  <IconButton color="primary" onClick={() => openPdf(q.pdfUrl)} title="View/Download PDF">
+                  <IconButton color="primary" onClick={() => openPdf(q._id, q.quotationNumber)} title="View/Download PDF">
                     <DownloadIcon />
                   </IconButton>
-                  <IconButton color="secondary" onClick={() => openPdf(q.pdfUrl)} title="Print PDF">
+                  <IconButton color="secondary" onClick={() => openPdf(q._id, q.quotationNumber)} title="Print PDF">
                     <PrintIcon />
                   </IconButton>
                   <IconButton color="error" onClick={() => handleDelete(q._id)} title="Delete">
