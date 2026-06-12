@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getSettings, updateSettings } = require('../controllers/settingController');
+const { getSettings, updateSettings } = require('../controllers/settingsController');
 const { protect } = require('../middleware/authMiddleware');
 const { uploadCloud } = require('../config/cloudinary');
 
