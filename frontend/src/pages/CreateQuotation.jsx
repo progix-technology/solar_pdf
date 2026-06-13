@@ -241,11 +241,12 @@ const CreateQuotation = () => {
           const htmlContent = pdfResponse.data;
           
           const opt = { 
-            margin: 0, 
+            margin: [0, 0, 10, 0], // Optional: bottom margin to avoid clipping
             filename: `Quotation_${res.data.quotationNumber}.pdf`, 
             image: { type: 'jpeg', quality: 0.98 }, 
             html2canvas: { scale: 2, useCORS: true }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
           };
           
           const pdfBlob = await html2pdf().set(opt).from(htmlContent).output('blob');

@@ -14,11 +14,9 @@ const defaultTemplate = `
     
     .pdf-page {
       width: 794px;
-      min-height: 1115px; /* Allows growth for page breaks */
       box-sizing: border-box;
       border: 1px solid #000;
       background-color: transparent;
-      page-break-after: always;
       margin: 0 auto 10px auto;
     }
     
