@@ -161,7 +161,7 @@ const defaultTemplate = `
         </td>
         <td style="width: 30%; padding: 5px; vertical-align: middle; text-align: center;">
           {{#if company.logoUrl}}
-            <img src="{{company.logoUrl}}" alt="Logo" class="company-logo" crossorigin="anonymous" />
+            <img src="{{company.logoUrl}}" alt="Logo" style="width: 100%; max-width: 200px; max-height: 120px; object-fit: contain;" class="company-logo" crossorigin="anonymous" />
           {{/if}}
         </td>
       </tr>
