@@ -130,6 +130,9 @@ const updateQuotation = async (req, res) => {
     quotation.markModified('prePages');
     quotation.markModified('postPages');
 
+    // Generate a new quotation number on edit as requested by the user
+    quotation.quotationNumber = await generateQuotationNumber();
+
     const updatedQuotation = await quotation.save();
     res.json(updatedQuotation);
   } catch (error) {

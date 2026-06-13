@@ -239,23 +239,23 @@ const CreateQuotation = () => {
           // Fetch HTML from backend
           const pdfResponse = await api.get(`/quotations/${res.data._id}/pdf`);
           const htmlContent = pdfResponse.data;
-          
-          const opt = { 
+
+          const opt = {
             margin: [0, 0, 10, 0], // Optional: bottom margin to avoid clipping
-            filename: `Quotation_${res.data.quotationNumber}.pdf`, 
-            image: { type: 'jpeg', quality: 0.98 }, 
-            html2canvas: { scale: 2, useCORS: true, windowWidth: 794, width: 794 }, 
+            filename: `Quotation_${res.data.quotationNumber}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, windowWidth: 794, width: 794 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
           };
-          
+
           const pdfBlob = await html2pdf().set(opt).from(htmlContent).output('blob');
           const pdfBlobUrl = URL.createObjectURL(pdfBlob);
-          
+
           setPdfBlobUrl(pdfBlobUrl);
           setPdfFilename(`Quotation_${res.data.quotationNumber}.pdf`);
           setPreviewModalOpen(true);
-          
+
           if (!id) {
             navigate(`/edit-quotation/${res.data._id}`, { replace: true });
           }
@@ -290,258 +290,258 @@ const CreateQuotation = () => {
         {successMsg && <Alert severity="success" sx={{ mb: 4, borderRadius: 3, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>{successMsg}</Alert>}
         {errorMsg && <Alert severity="error" sx={{ mb: 4, borderRadius: 3, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>{errorMsg}</Alert>}
 
-      <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
 
-        {/* Step 1: Pre-Quotation Pages */}
-        <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>1. Cover Pages / Prefaces (Before Quotation)</Typography>
-            <Button variant="outlined" sx={{ color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }} onClick={addPrePage} startIcon={<AddCircleIcon />}>
-              Add New Cover Page
-            </Button>
-          </Box>
-          <Typography variant="body2" color="textSecondary" mb={2}>
-            Each editor below represents exactly one full page in the generated PDF. Add as many pages as you need.
-          </Typography>
-          {prePages.map((pageContent, index) => (
-            <Box key={index} sx={{ mb: 4, p: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
-              <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="subtitle1" fontWeight="bold">Cover Page {index + 1}</Typography>
-                <IconButton color="error" size="small" onClick={() => removePrePage(index)}><DeleteIcon /></IconButton>
+          {/* Step 1: Pre-Quotation Pages */}
+          <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
+            <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>1. Cover Pages / Prefaces (Before Quotation)</Typography>
+              <Button variant="outlined" sx={{ color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }} onClick={addPrePage} startIcon={<AddCircleIcon />}>
+                Add New Cover Page
+              </Button>
+            </Box>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+              Each editor below represents exactly one full page in the generated PDF. Add as many pages as you need.
+            </Typography>
+            {prePages.map((pageContent, index) => (
+              <Box key={index} sx={{ mb: 4, p: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography variant="subtitle1" fontWeight="bold">Cover Page {index + 1}</Typography>
+                  <IconButton color="error" size="small" onClick={() => removePrePage(index)}><DeleteIcon /></IconButton>
+                </Box>
+                <Box sx={{ height: 250, mb: 4 }}>
+                  <ReactQuill
+                    theme="snow"
+                    value={pageContent}
+                    onChange={(val) => updatePrePage(index, val)}
+                    style={{ height: '100%' }}
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        ['clean']
+                      ],
+                    }}
+                  />
+                </Box>
               </Box>
-              <Box sx={{ height: 250, mb: 4 }}>
-                <ReactQuill
-                  theme="snow"
-                  value={pageContent}
-                  onChange={(val) => updatePrePage(index, val)}
-                  style={{ height: '100%' }}
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [1, 2, 3, false] }],
-                      ['bold', 'italic', 'underline', 'strike'],
-                      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                      ['clean']
-                    ],
-                  }}
-                />
+            ))}
+          </Paper>
+
+          {/* Step 2: Customer Details */}
+          <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50', mb: 3 }}>2. Customer Details</Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <TextField fullWidth label="Quotation Title" name="quotationTitle" required value={formData.quotationTitle} onChange={handleChange} helperText="e.g. Quotation for 10kW Solar System" />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField fullWidth label="Customer Name" name="customerName" required value={formData.customerName} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField fullWidth label="Contact Number" name="contactNumber" value={formData.contactNumber} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField fullWidth label="Customer Address" name="customerAddress" multiline rows={2} value={formData.customerAddress} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField fullWidth label="Site Address" name="siteAddress" multiline rows={2} value={formData.siteAddress} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField fullWidth type="date" label="Quotation Date" name="quotationDate" InputLabelProps={{ shrink: true }} required value={formData.quotationDate} onChange={handleChange} />
+              </Grid>
+
+            </Grid>
+          </Paper>
+
+          {/* Step 3: Dynamic Table */}
+          <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
+            <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={3}>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>3. Data Table</Typography>
+              <Box display="flex" gap={2} width={{ xs: '100%', sm: 'auto' }}>
+                <Button startIcon={<AddCircleIcon />} variant="outlined" onClick={handleAddColumn} sx={{ flex: { xs: 1, sm: 'none' }, color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }}>Add Column</Button>
+                <Button startIcon={<AddCircleIcon />} sx={{ flex: { xs: 1, sm: 'none' }, bgcolor: '#4CAF50', color: '#fff', '&:hover': { bgcolor: '#43A047', boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)' } }} variant="contained" onClick={addRow}>Add Row</Button>
               </Box>
             </Box>
-          ))}
-        </Paper>
 
-        {/* Step 2: Customer Details */}
-        <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50', mb: 3 }}>2. Customer Details</Typography>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Quotation Title" name="quotationTitle" required value={formData.quotationTitle} onChange={handleChange} helperText="e.g. Quotation for 10kW Solar System" />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Customer Name" name="customerName" required value={formData.customerName} onChange={handleChange} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Contact Number" name="contactNumber" value={formData.contactNumber} onChange={handleChange} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Customer Address" name="customerAddress" multiline rows={2} value={formData.customerAddress} onChange={handleChange} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Site Address" name="siteAddress" multiline rows={2} value={formData.siteAddress} onChange={handleChange} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth type="date" label="Quotation Date" name="quotationDate" InputLabelProps={{ shrink: true }} required value={formData.quotationDate} onChange={handleChange} />
-            </Grid>
-
-          </Grid>
-        </Paper>
-
-        {/* Step 3: Dynamic Table */}
-        <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={3}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>3. Data Table</Typography>
-            <Box display="flex" gap={2} width={{ xs: '100%', sm: 'auto' }}>
-              <Button startIcon={<AddCircleIcon />} variant="outlined" onClick={handleAddColumn} sx={{ flex: { xs: 1, sm: 'none' }, color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }}>Add Column</Button>
-              <Button startIcon={<AddCircleIcon />} sx={{ flex: { xs: 1, sm: 'none' }, bgcolor: '#4CAF50', color: '#fff', '&:hover': { bgcolor: '#43A047', boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)' } }} variant="contained" onClick={addRow}>Add Row</Button>
-            </Box>
-          </Box>
-
-          <TableContainer variant="outlined" sx={{ mb: 3, border: 'none', borderRadius: 2, boxShadow: '0 4px 20px 0 rgba(0, 0, 0, 0.05)' }}>
-            <Table>
-              <TableHead sx={{ background: 'linear-gradient(135deg, #4CAF50 0%, #81C784 100%)' }}>
-                <TableRow>
-                  {columns.map((col, index) => (
-                    <TableCell key={index} sx={{ minWidth: 150, color: '#fff', fontWeight: 'bold', py: 2, borderBottom: 'none' }}>
-                      <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <Typography sx={{ fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', pr: 1 }}>{col}</Typography>
-                        <Box display="flex" flexWrap="nowrap">
-                          <IconButton size="small" sx={{ p: 0.5, mr: 0.5, color: 'rgba(255,255,255,0.9)', '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.2)' } }} onClick={() => openEditColumn(index)}><EditIcon fontSize="small" /></IconButton>
-                          <IconButton size="small" sx={{ p: 0.5, color: 'rgba(255,255,255,0.9)', '&:hover': { color: '#f44336', bgcolor: 'rgba(244,67,54,0.1)' } }} onClick={() => deleteColumn(index)} disabled={columns.length === 1}><DeleteIcon fontSize="small" /></IconButton>
+            <TableContainer variant="outlined" sx={{ mb: 3, border: 'none', borderRadius: 2, boxShadow: '0 4px 20px 0 rgba(0, 0, 0, 0.05)' }}>
+              <Table>
+                <TableHead sx={{ background: 'linear-gradient(135deg, #4CAF50 0%, #81C784 100%)' }}>
+                  <TableRow>
+                    {columns.map((col, index) => (
+                      <TableCell key={index} sx={{ minWidth: 150, color: '#fff', fontWeight: 'bold', py: 2, borderBottom: 'none' }}>
+                        <Box display="flex" alignItems="center" justifyContent="space-between">
+                          <Typography sx={{ fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', pr: 1 }}>{col}</Typography>
+                          <Box display="flex" flexWrap="nowrap">
+                            <IconButton size="small" sx={{ p: 0.5, mr: 0.5, color: 'rgba(255,255,255,0.9)', '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.2)' } }} onClick={() => openEditColumn(index)}><EditIcon fontSize="small" /></IconButton>
+                            <IconButton size="small" sx={{ p: 0.5, color: 'rgba(255,255,255,0.9)', '&:hover': { color: '#f44336', bgcolor: 'rgba(244,67,54,0.1)' } }} onClick={() => deleteColumn(index)} disabled={columns.length === 1}><DeleteIcon fontSize="small" /></IconButton>
+                          </Box>
                         </Box>
-                      </Box>
-                    </TableCell>
-                  ))}
-                  <TableCell align="center" width="80px" sx={{ color: '#fff', fontWeight: 'bold', py: 2, borderBottom: 'none' }}>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row, rowIndex) => (
-                  <TableRow key={rowIndex} sx={{ '&:last-child td': { borderBottom: 0 }, '&:hover': { bgcolor: '#fafafa' } }}>
-                    {columns.map((col, colIndex) => (
-                      <TableCell key={colIndex} sx={{ py: 2 }}>
-                        <TextField
-                          size="small"
-                          fullWidth
-                          value={row[col] || ''}
-                          onChange={(e) => handleRowChange(rowIndex, col, e.target.value)}
-                          sx={{ '& .MuiOutlinedInput-root': { bgcolor: '#fff', borderRadius: 1.5 } }}
-                        />
                       </TableCell>
                     ))}
-                    <TableCell align="center" sx={{ py: 2 }}>
-                      <IconButton 
-                        sx={{ color: '#f44336', bgcolor: 'rgba(244, 67, 54, 0.05)', '&:hover': { bgcolor: 'rgba(244, 67, 54, 0.15)', transform: 'scale(1.1)' }, transition: 'all 0.2s' }} 
-                        onClick={() => removeRow(rowIndex)} 
-                        disabled={rows.length === 1}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
+                    <TableCell align="center" width="80px" sx={{ color: '#fff', fontWeight: 'bold', py: 2, borderBottom: 'none' }}>Action</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row, rowIndex) => (
+                    <TableRow key={rowIndex} sx={{ '&:last-child td': { borderBottom: 0 }, '&:hover': { bgcolor: '#fafafa' } }}>
+                      {columns.map((col, colIndex) => (
+                        <TableCell key={colIndex} sx={{ py: 2 }}>
+                          <TextField
+                            size="small"
+                            fullWidth
+                            value={row[col] || ''}
+                            onChange={(e) => handleRowChange(rowIndex, col, e.target.value)}
+                            sx={{ '& .MuiOutlinedInput-root': { bgcolor: '#fff', borderRadius: 1.5 } }}
+                          />
+                        </TableCell>
+                      ))}
+                      <TableCell align="center" sx={{ py: 2 }}>
+                        <IconButton
+                          sx={{ color: '#f44336', bgcolor: 'rgba(244, 67, 54, 0.05)', '&:hover': { bgcolor: 'rgba(244, 67, 54, 0.15)', transform: 'scale(1.1)' }, transition: 'all 0.2s' }}
+                          onClick={() => removeRow(rowIndex)}
+                          disabled={rows.length === 1}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
-        </Paper>
+          </Paper>
 
-        {/* Step 4: First Page Notes */}
-        <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }} mb={0}>4. First Page Notes (Amount in Words / Extra Info)</Typography>
-          </Box>
-          <Typography variant="body2" color="textSecondary" mb={2}>
-            This text will appear at the bottom of the first page, just under the Total Amount block. Use this for Amount in Words, short notes, or special details.
-          </Typography>
-          <Box sx={{ height: 200, mb: 6 }}>
-            <ReactQuill
-              theme="snow"
-              value={firstPageNotes}
-              onChange={setFirstPageNotes}
-              style={{ height: '100%' }}
-              modules={{
-                toolbar: [
-                  [{ 'header': [1, 2, 3, false] }],
-                  ['bold', 'italic', 'underline', 'strike'],
-                  [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                  ['clean']
-                ],
-              }}
-            />
-          </Box>
+          {/* Step 4: First Page Notes */}
+          <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
+            <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }} mb={0}>4. First Page Notes (Amount in Words / Extra Info)</Typography>
+            </Box>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+              This text will appear at the bottom of the first page, just under the Total Amount block. Use this for Amount in Words, short notes, or special details.
+            </Typography>
+            <Box sx={{ height: 200, mb: 6 }}>
+              <ReactQuill
+                theme="snow"
+                value={firstPageNotes}
+                onChange={setFirstPageNotes}
+                style={{ height: '100%' }}
+                modules={{
+                  toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                  ],
+                }}
+              />
+            </Box>
 
-          <Box display="flex" justifyContent="center">
-            <Paper sx={{ p: 3, bgcolor: 'grey.50', width: '100%', minWidth: { xs: 'auto', sm: 400 }, maxWidth: 500, textAlign: 'center' }} variant="outlined">
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" fontWeight="bold">Total Amount (₹):</Typography>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  value={totals.grandTotal}
-                  onChange={(e) => {
-                    setIsManualTotal(true);
-                    setTotals({ ...totals, grandTotal: e.target.value, subtotal: e.target.value });
-                  }}
-                  sx={{ width: 150, input: { fontWeight: 'bold', color: '#4CAF50', textAlign: 'right', fontSize: '1.25rem' } }}
-                />
+            <Box display="flex" justifyContent="center">
+              <Paper sx={{ p: 3, bgcolor: 'grey.50', width: '100%', minWidth: { xs: 'auto', sm: 400 }, maxWidth: 500, textAlign: 'center' }} variant="outlined">
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography variant="h6" fontWeight="bold">Total Amount (₹):</Typography>
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    value={totals.grandTotal}
+                    onChange={(e) => {
+                      setIsManualTotal(true);
+                      setTotals({ ...totals, grandTotal: e.target.value, subtotal: e.target.value });
+                    }}
+                    sx={{ width: 150, input: { fontWeight: 'bold', color: '#4CAF50', textAlign: 'right', fontSize: '1.25rem' } }}
+                  />
+                </Box>
+              </Paper>
+            </Box>
+
+          </Paper>
+
+          {/* Step 5: Terms, Conditions & Formatted Text */}
+          <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
+            <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>5. Terms & Conditions</Typography>
+            </Box>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+              Use the editor below to format your text (Bold, Italic, Headings). This content will automatically appear on its own dedicated page.
+            </Typography>
+
+            <Box sx={{ height: 300, mb: 6 }}>
+              <ReactQuill
+                theme="snow"
+                value={termsAndConditions}
+                onChange={setTermsAndConditions}
+                style={{ height: '100%' }}
+                modules={{
+                  toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                  ],
+                }}
+              />
+            </Box>
+          </Paper>
+
+          {/* Step 6: Post-Quotation Pages */}
+          <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
+            <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>6. Annexure / Extra Pages (After Terms & Conditions)</Typography>
+              <Button variant="outlined" sx={{ color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }} onClick={addPostPage} startIcon={<AddCircleIcon />}>
+                Add New Annexure Page
+              </Button>
+            </Box>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+              Need more pages after the Terms & Conditions? Add them here. Each editor creates exactly one full page in the generated PDF.
+            </Typography>
+            {postPages.map((pageContent, index) => (
+              <Box key={index} sx={{ mb: 4, p: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography variant="subtitle1" fontWeight="bold">Annexure Page {index + 1}</Typography>
+                  <IconButton color="error" size="small" onClick={() => removePostPage(index)}><DeleteIcon /></IconButton>
+                </Box>
+                <Box sx={{ height: 250, mb: 4 }}>
+                  <ReactQuill
+                    theme="snow"
+                    value={pageContent}
+                    onChange={(val) => updatePostPage(index, val)}
+                    style={{ height: '100%' }}
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        ['clean']
+                      ],
+                    }}
+                  />
+                </Box>
               </Box>
-            </Paper>
-          </Box>
+            ))}
+          </Paper>
 
-        </Paper>
-
-        {/* Step 5: Terms, Conditions & Formatted Text */}
-        <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>5. Terms & Conditions</Typography>
-          </Box>
-          <Typography variant="body2" color="textSecondary" mb={2}>
-            Use the editor below to format your text (Bold, Italic, Headings). This content will automatically appear on its own dedicated page.
-          </Typography>
-
-          <Box sx={{ height: 300, mb: 6 }}>
-            <ReactQuill
-              theme="snow"
-              value={termsAndConditions}
-              onChange={setTermsAndConditions}
-              style={{ height: '100%' }}
-              modules={{
-                toolbar: [
-                  [{ 'header': [1, 2, 3, false] }],
-                  ['bold', 'italic', 'underline', 'strike'],
-                  [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                  ['clean']
-                ],
-              }}
-            />
-          </Box>
-        </Paper>
-
-        {/* Step 6: Post-Quotation Pages */}
-        <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
-            <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>6. Annexure / Extra Pages (After Terms & Conditions)</Typography>
-            <Button variant="outlined" sx={{ color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }} onClick={addPostPage} startIcon={<AddCircleIcon />}>
-              Add New Annexure Page
+          {/* Generate Button */}
+          <Box textAlign="center" mb={8} mt={6}>
+            <Button type="submit" variant="contained" size="large" sx={{
+              px: 8,
+              py: 2.5,
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              bgcolor: '#4CAF50',
+              borderRadius: 3,
+              textTransform: 'none',
+              boxShadow: '0 8px 24px 0 rgba(76, 175, 80, 0.4)',
+              '&:hover': { bgcolor: '#43A047', boxShadow: '0 10px 30px rgba(76, 175, 80, 0.3)', transform: 'translateY(-2px)' },
+              transition: 'all 0.2s'
+            }}>
+              {id ? 'UPDATE QUOTATION PDF' : 'GENERATE QUOTATION PDF'}
             </Button>
           </Box>
-          <Typography variant="body2" color="textSecondary" mb={2}>
-            Need more pages after the Terms & Conditions? Add them here. Each editor creates exactly one full page in the generated PDF.
-          </Typography>
-          {postPages.map((pageContent, index) => (
-            <Box key={index} sx={{ mb: 4, p: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
-              <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="subtitle1" fontWeight="bold">Annexure Page {index + 1}</Typography>
-                <IconButton color="error" size="small" onClick={() => removePostPage(index)}><DeleteIcon /></IconButton>
-              </Box>
-              <Box sx={{ height: 250, mb: 4 }}>
-                <ReactQuill
-                  theme="snow"
-                  value={pageContent}
-                  onChange={(val) => updatePostPage(index, val)}
-                  style={{ height: '100%' }}
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [1, 2, 3, false] }],
-                      ['bold', 'italic', 'underline', 'strike'],
-                      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                      ['clean']
-                    ],
-                  }}
-                />
-              </Box>
-            </Box>
-          ))}
-        </Paper>
-
-        {/* Generate Button */}
-        <Box textAlign="center" mb={8} mt={6}>
-          <Button type="submit" variant="contained" size="large" sx={{ 
-            px: 8, 
-            py: 2.5, 
-            fontSize: '1.2rem', 
-            fontWeight: 'bold', 
-            bgcolor: '#4CAF50', 
-            borderRadius: 3, 
-            textTransform: 'none',
-            boxShadow: '0 8px 24px 0 rgba(76, 175, 80, 0.4)',
-            '&:hover': { bgcolor: '#43A047', boxShadow: '0 10px 30px rgba(76, 175, 80, 0.3)', transform: 'translateY(-2px)' },
-            transition: 'all 0.2s'
-          }}>
-            {id ? 'UPDATE QUOTATION PDF' : 'GENERATE QUOTATION PDF'}
-          </Button>
-        </Box>
-      </form>
-    </Box>
+        </form>
+      </Box>
 
       {/* Edit Column Modal */}
       <Dialog open={colModalOpen} onClose={() => setColModalOpen(false)}>
