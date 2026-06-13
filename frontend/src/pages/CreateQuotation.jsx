@@ -176,8 +176,11 @@ const CreateQuotation = () => {
     setRows(newRows);
   };
 
+  const [isManualTotal, setIsManualTotal] = useState(false);
+
   const calculateTotals = (currentRows) => {
     if (!columns.includes('Amount')) return;
+    if (isManualTotal) return; // Do not overwrite if user manually edited it
     const subtotal = currentRows.reduce((acc, row) => acc + Number(row['Amount'] || 0), 0);
     const grandTotal = subtotal; // GST is inclusive
     setTotals({ subtotal, gstAmount: 0, grandTotal });
@@ -438,8 +441,18 @@ const CreateQuotation = () => {
           <Box display="flex" justifyContent="center">
             <Paper sx={{ p: 3, bgcolor: 'grey.50', width: '100%', minWidth: { xs: 'auto', sm: 400 }, maxWidth: 500, textAlign: 'center' }} variant="outlined">
               <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" fontWeight="bold">Total Amount:</Typography>
-                <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>₹{totals.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+                <Typography variant="h6" fontWeight="bold">Total Amount (₹):</Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  type="number"
+                  value={totals.grandTotal}
+                  onChange={(e) => {
+                    setIsManualTotal(true);
+                    setTotals({ ...totals, grandTotal: Number(e.target.value), subtotal: Number(e.target.value) });
+                  }}
+                  sx={{ width: 150, input: { fontWeight: 'bold', color: '#4CAF50', textAlign: 'right', fontSize: '1.25rem' } }}
+                />
               </Box>
             </Paper>
           </Box>
