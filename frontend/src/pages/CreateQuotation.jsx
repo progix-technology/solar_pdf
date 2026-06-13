@@ -220,7 +220,7 @@ const CreateQuotation = () => {
 
           // Use html2pdf.js to generate the PDF
           const opt = {
-            margin:       0.5,
+            margin:       0,
             filename:     `Quotation_${res.data.quotationNumber}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
