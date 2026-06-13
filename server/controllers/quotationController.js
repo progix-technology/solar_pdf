@@ -198,13 +198,12 @@ const downloadQuotationPDF = async (req, res) => {
       templateContent = templateContent.replace(/<img\s+/gi, '<img crossorigin="anonymous" ');
     }
 
-    const pdfBuffer = await generatePDFBuffer(templateContent, pdfData);
+    const htmlString = await generatePDFBuffer(templateContent, pdfData);
 
     res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="Quotation_${quotation.quotationNumber}.pdf"`
+      'Content-Type': 'text/html',
     });
-    res.send(pdfBuffer);
+    res.send(htmlString);
   } catch (error) {
     console.error('Download Error:', error);
     res.status(500).json({ message: 'Failed to generate HTML', error: error ? error.toString() : 'Unknown Error', stack: error ? error.stack : '' });

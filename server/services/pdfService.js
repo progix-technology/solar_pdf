@@ -1,7 +1,6 @@
 const handlebars = require('handlebars');
 const path = require('path');
 const fs = require('fs');
-const puppeteer = require('puppeteer');
 
 // Ensure uploads/pdfs directory exists
 const pdfDir = path.join(__dirname, '../uploads/pdfs');
@@ -32,14 +31,8 @@ const generatePDFBuffer = async (templateContent, data) => {
     const template = handlebars.compile(templateContent);
     const html = template(data);
 
-    // Use puppeteer to generate real PDF
-    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    const pdfBytes = await page.pdf({ format: 'A4', printBackground: true });
-    await browser.close();
-
-    return Buffer.from(pdfBytes);
+    // Return the raw HTML string instead of generating a PDF on the backend
+    return html;
   } catch (error) {
     console.error('Error generating HTML:', error);
     throw error;

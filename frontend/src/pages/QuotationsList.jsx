@@ -43,13 +43,16 @@ const QuotationsList = () => {
 
   const openPdf = async (id, quotationNumber) => {
     try {
-      const response = await api.get(`/quotations/${id}/pdf`, { responseType: 'blob' });
-      const url = URL.createObjectURL(response.data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Quotation_${quotationNumber}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const response = await api.get(`/quotations/${id}/pdf`);
+      const htmlContent = response.data;
+      const opt = { 
+        margin: 0, 
+        filename: `Quotation_${quotationNumber}.pdf`, 
+        image: { type: 'jpeg', quality: 0.98 }, 
+        html2canvas: { scale: 2, useCORS: true }, 
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+      };
+      html2pdf().set(opt).from(htmlContent).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
       if (error.response && typeof error.response.data === 'string') {

@@ -233,9 +233,20 @@ const CreateQuotation = () => {
 
       if (res.data._id) {
         try {
-          // Fetch real PDF Blob from backend
-          const pdfResponse = await api.get(`/quotations/${res.data._id}/pdf`, { responseType: 'blob' });
-          const pdfBlobUrl = URL.createObjectURL(pdfResponse.data);
+          // Fetch HTML from backend
+          const pdfResponse = await api.get(`/quotations/${res.data._id}/pdf`);
+          const htmlContent = pdfResponse.data;
+          
+          const opt = { 
+            margin: 0, 
+            filename: `Quotation_${res.data.quotationNumber}.pdf`, 
+            image: { type: 'jpeg', quality: 0.98 }, 
+            html2canvas: { scale: 2, useCORS: true }, 
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+          };
+          
+          const pdfBlob = await html2pdf().set(opt).from(htmlContent).output('blob');
+          const pdfBlobUrl = URL.createObjectURL(pdfBlob);
           
           setPdfBlobUrl(pdfBlobUrl);
           setPdfFilename(`Quotation_${res.data.quotationNumber}.pdf`);
