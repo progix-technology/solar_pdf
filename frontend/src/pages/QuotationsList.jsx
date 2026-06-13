@@ -65,7 +65,7 @@ const QuotationsList = () => {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#f4f6f8', py: 6, px: { xs: 2, md: 6 } }}>
       <Box sx={{ maxWidth: 1200, margin: '0 auto' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={5}>
           <Box>
             <Typography variant="h4" fontWeight="900" sx={{ color: '#1B5E20', letterSpacing: '-0.5px' }}>
               Quotations Dashboard
@@ -168,7 +168,7 @@ const QuotationsList = () => {
                     <TableCell sx={{ py: 2.5, px: 4, fontWeight: 'bold', color: '#2E7D32', fontSize: '1.05rem' }}>
                       ₹{q.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </TableCell>
-                    <TableCell align="center" sx={{ py: 2.5, px: 4 }}>
+                    <TableCell align="center" sx={{ py: 2.5, px: 4, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'center', gap: 1 }}>
                       <IconButton
                         sx={{ color: '#1976d2', mx: 0.5, bgcolor: 'rgba(25, 118, 210, 0.05)', '&:hover': { bgcolor: 'rgba(25, 118, 210, 0.15)', transform: 'scale(1.1)' }, transition: 'all 0.2s' }}
                         onClick={() => navigate(`/edit-quotation/${q._id}`)}

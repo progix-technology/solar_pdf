@@ -269,7 +269,7 @@ const CreateQuotation = () => {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#f4f6f8', py: 4, px: { xs: 2, md: 4 } }}>
       <Box sx={{ maxWidth: 1200, margin: '0 auto' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={4}>
           <Box>
             <Typography variant="h4" fontWeight="900" sx={{ color: '#4CAF50', letterSpacing: '-0.5px' }}>
               {id ? 'Edit Quotation' : 'Create New Quotation'}
@@ -290,7 +290,7 @@ const CreateQuotation = () => {
 
         {/* Step 1: Pre-Quotation Pages */}
         <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
             <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>1. Cover Pages / Prefaces (Before Quotation)</Typography>
             <Button variant="outlined" sx={{ color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }} onClick={addPrePage} startIcon={<AddCircleIcon />}>
               Add New Cover Page
@@ -353,11 +353,11 @@ const CreateQuotation = () => {
 
         {/* Step 3: Dynamic Table */}
         <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={3}>
             <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>3. Data Table</Typography>
-            <Box>
-              <Button startIcon={<AddCircleIcon />} variant="outlined" onClick={handleAddColumn} sx={{ mr: 2, color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }}>Add Column</Button>
-              <Button startIcon={<AddCircleIcon />} sx={{ bgcolor: '#4CAF50', color: '#fff', '&:hover': { bgcolor: '#43A047', boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)' } }} variant="contained" onClick={addRow}>Add Row</Button>
+            <Box display="flex" gap={2} width={{ xs: '100%', sm: 'auto' }}>
+              <Button startIcon={<AddCircleIcon />} variant="outlined" onClick={handleAddColumn} sx={{ flex: { xs: 1, sm: 'none' }, color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }}>Add Column</Button>
+              <Button startIcon={<AddCircleIcon />} sx={{ flex: { xs: 1, sm: 'none' }, bgcolor: '#4CAF50', color: '#fff', '&:hover': { bgcolor: '#43A047', boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)' } }} variant="contained" onClick={addRow}>Add Row</Button>
             </Box>
           </Box>
 
@@ -412,7 +412,7 @@ const CreateQuotation = () => {
 
         {/* Step 4: First Page Notes */}
         <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
             <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }} mb={0}>4. First Page Notes (Amount in Words / Extra Info)</Typography>
           </Box>
           <Typography variant="body2" color="textSecondary" mb={2}>
@@ -436,7 +436,7 @@ const CreateQuotation = () => {
           </Box>
 
           <Box display="flex" justifyContent="center">
-            <Paper sx={{ p: 3, bgcolor: 'grey.50', minWidth: 400, textAlign: 'center' }} variant="outlined">
+            <Paper sx={{ p: 3, bgcolor: 'grey.50', width: '100%', minWidth: { xs: 'auto', sm: 400 }, maxWidth: 500, textAlign: 'center' }} variant="outlined">
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Typography variant="h6" fontWeight="bold">Total Amount:</Typography>
                 <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>₹{totals.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
@@ -448,7 +448,7 @@ const CreateQuotation = () => {
 
         {/* Step 5: Terms, Conditions & Formatted Text */}
         <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
             <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>5. Terms & Conditions</Typography>
           </Box>
           <Typography variant="body2" color="textSecondary" mb={2}>
@@ -475,7 +475,7 @@ const CreateQuotation = () => {
 
         {/* Step 6: Post-Quotation Pages */}
         <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, border: '1px solid rgba(224, 224, 224, 0.5)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.03)' }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2} mb={2}>
             <Typography variant="h6" fontWeight="bold" sx={{ color: '#4CAF50' }}>6. Annexure / Extra Pages (After Terms & Conditions)</Typography>
             <Button variant="outlined" sx={{ color: '#4CAF50', borderColor: '#4CAF50', '&:hover': { borderColor: '#43A047', bgcolor: 'rgba(76, 175, 80, 0.05)' } }} onClick={addPostPage} startIcon={<AddCircleIcon />}>
               Add New Annexure Page
