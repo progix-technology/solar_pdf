@@ -47,7 +47,13 @@ const updateSettings = async (req, res) => {
     if (req.file) {
       if (req.file.path && req.file.path.startsWith('http')) {
         settings.logoUrl = req.file.path;
+      } else if (req.file.buffer) {
+        // Convert buffer to base64
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const mimeType = req.file.mimetype;
+        settings.logoUrl = `data:${mimeType};base64,${b64}`;
       } else {
+        // Fallback for disk storage
         settings.logoUrl = `/uploads/${req.file.filename}`;
       }
     }

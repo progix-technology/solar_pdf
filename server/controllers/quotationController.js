@@ -180,7 +180,7 @@ const downloadQuotationPDF = async (req, res) => {
     if (!companyData.logoUrl) {
       companyData.logoUrl = '/logo.png';
     }
-    if (companyData.logoUrl && !companyData.logoUrl.startsWith('http://') && !companyData.logoUrl.startsWith('https://')) {
+    if (companyData.logoUrl && !companyData.logoUrl.startsWith('http://') && !companyData.logoUrl.startsWith('https://') && !companyData.logoUrl.startsWith('data:')) {
       companyData.logoUrl = `${req.protocol}://${req.get('host')}${companyData.logoUrl.startsWith('/') ? '' : '/'}${companyData.logoUrl}`;
     }
 

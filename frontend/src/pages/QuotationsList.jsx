@@ -49,7 +49,7 @@ const QuotationsList = () => {
         margin: [0, 0, 10, 0], 
         filename: `Quotation_${quotationNumber}.pdf`, 
         image: { type: 'jpeg', quality: 0.98 }, 
-        html2canvas: { scale: 2, useCORS: true }, 
+        html2canvas: { scale: 2, useCORS: true, windowWidth: 794, width: 794 }, 
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };

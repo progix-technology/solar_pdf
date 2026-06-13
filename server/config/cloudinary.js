@@ -24,16 +24,9 @@ if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY) {
   });
   uploadCloud = multer({ storage: storage });
 } else {
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      const dir = path.join(__dirname, '../uploads');
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      cb(null, dir);
-    },
-    filename: function (req, file, cb) {
-      cb(null, 'logo-' + Date.now() + path.extname(file.originalname));
-    }
-  });
+  // Use memory storage so we can convert the image to Base64 and save it in MongoDB.
+  // This ensures the logo is saved permanently even on Vercel/Render ephemeral disks.
+  const storage = multer.memoryStorage();
   uploadCloud = multer({ storage: storage });
 }
 

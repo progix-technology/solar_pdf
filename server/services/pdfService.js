@@ -33,7 +33,14 @@ const generatePDFBuffer = async (templateContent, data) => {
   try {
     // Compile Handlebars template
     const template = handlebars.compile(templateContent);
-    const html = template(data);
+    let html = template(data);
+
+    // CRITICAL: Replace all non-breaking spaces (&nbsp;, &#160;, \u00A0) with standard spaces.
+    // If the user copy-pastes text from Word/Excel, non-breaking spaces will prevent the text
+    // from wrapping at the edge of the PDF, causing it to be cropped.
+    html = html.replace(/&nbsp;/g, ' ');
+    html = html.replace(/&#160;/g, ' ');
+    html = html.replace(/\u00A0/g, ' ');
 
     // Return the raw HTML string instead of generating a PDF on the backend
     return html;

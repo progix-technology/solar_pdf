@@ -34,9 +34,11 @@ const defaultTemplate = `
     }
     
     .pdf-page-content {
-      padding: 0 20px 20px 20px;
+      padding: 0 40px 20px 40px;
       width: 100%;
       box-sizing: border-box;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
     
     .company-logo {
@@ -109,8 +111,47 @@ const defaultTemplate = `
     
     .terms-container {
       padding: 30px 20px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
     .terms-title { font-weight: bold; margin-bottom: 15px; font-size: 16px; text-decoration: underline; }
+
+    /* Rich Text Support (ReactQuill & Copy-Paste overrides) */
+    .rich-text-content {
+      width: 100% !important;
+      max-width: 100% !important;
+      white-space: normal !important;
+      word-wrap: break-word !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word !important;
+      padding: 0 40px !important;
+    }
+    .rich-text-content * {
+      white-space: pre-wrap !important;
+      word-wrap: break-word !important;
+      word-break: break-all !important;
+      overflow-wrap: break-word !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    ol, ul { padding-left: 20px; }
+    strong { font-weight: bold; }
+    em { font-style: italic; }
+    u { text-decoration: underline; }
+
+    /* GLOBAL WIDTH LOCK */
+    .pdf-wrapper * {
+      max-width: 100% !important;
+    }
+    img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+    table {
+      table-layout: fixed !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
 
     @media print {
       .pdf-page {
@@ -139,7 +180,7 @@ const defaultTemplate = `
   {{#each prePages}}
     <div class="pdf-page">
       <div class="pdf-page-content" style="padding: 40px;">
-        {{{this}}}
+        <div class="rich-text-content">{{{this}}}</div>
       </div>
     </div>
     <div class="html2pdf__page-break"></div>
@@ -223,7 +264,7 @@ const defaultTemplate = `
 
       {{#if firstPageNotes}}
       <div style="padding: 0; margin-bottom: 20px; text-align: left;">
-        {{{firstPageNotes}}}
+        <div class="rich-text-content">{{{firstPageNotes}}}</div>
       </div>
       {{/if}}
 
@@ -237,12 +278,12 @@ const defaultTemplate = `
                 <td style="border: 1px solid #38761d; padding: 6px 10px; width: 40%;">{{formatCurrency subtotal}} /-</td>
               </tr>
               <tr>
-                <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">GST</th>
-                <td style="border: 1px solid #38761d; padding: 6px 10px;">Inc/-</td>
+                <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">GST ({{gstPercentage}}%)</th>
+                <td style="border: 1px solid #38761d; padding: 6px 10px;">{{formatCurrency gstAmount}} /-</td>
               </tr>
               <tr>
-                <th class="highlight-yellow" style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">Grand Total</th>
-                <td class="highlight-yellow" style="border: 1px solid #38761d; padding: 6px 10px;">{{formatCurrency grandTotal}} /-</td>
+                <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">Grand Total</th>
+                <td style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold; background-color: #e8eedb;">{{formatCurrency grandTotal}} /-</td>
               </tr>
             </table>
           </td>
@@ -258,10 +299,8 @@ const defaultTemplate = `
   {{#if termsAndConditions}}
   <div class="pdf-page">
     <div class="terms-container">
-      <div class="terms-title" style="font-size: 20px; text-decoration: underline; margin-bottom: 20px;"><strong><b>Terms & Conditions</b></strong></div>
-      <div style="text-align: left;">
-        {{{termsAndConditions}}}
-      </div>
+      <div class="terms-title" style="font-size: 20px; text-decoration: underline; margin-bottom: 20px;"><strong><b>Terms &amp; Conditions</b></strong></div>
+      <div class="rich-text-content">{{{termsAndConditions}}}</div>
     </div>
   </div>
   <div class="html2pdf__page-break"></div>
@@ -271,7 +310,7 @@ const defaultTemplate = `
   {{#each postPages}}
   <div class="pdf-page">
     <div class="pdf-page-content" style="padding: 40px;">
-      {{{this}}}
+      <div class="rich-text-content">{{{this}}}</div>
     </div>
   </div>
   <div class="html2pdf__page-break"></div>

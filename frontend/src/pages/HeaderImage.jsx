@@ -14,7 +14,7 @@ const HeaderImage = () => {
         const { data } = await api.get('/settings');
         if (data.logoUrl) {
           const baseUrl = api.defaults.baseURL.replace('/api', '');
-          const url = data.logoUrl.startsWith('http') ? data.logoUrl : `${baseUrl}${data.logoUrl}`;
+          const url = (data.logoUrl.startsWith('http') || data.logoUrl.startsWith('data:')) ? data.logoUrl : `${baseUrl}${data.logoUrl}`;
           setCurrentImage(url);
         }
       } catch (err) {
@@ -50,7 +50,7 @@ const HeaderImage = () => {
       setSuccessMsg('Header Image updated successfully!');
       if (res.data.logoUrl) {
         const baseUrl = api.defaults.baseURL.replace('/api', '');
-        const url = res.data.logoUrl.startsWith('http') ? res.data.logoUrl : `${baseUrl}${res.data.logoUrl}`;
+        const url = (res.data.logoUrl.startsWith('http') || res.data.logoUrl.startsWith('data:')) ? res.data.logoUrl : `${baseUrl}${res.data.logoUrl}`;
         setCurrentImage(url);
       }
     } catch (err) {
