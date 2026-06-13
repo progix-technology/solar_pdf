@@ -260,7 +260,7 @@ const defaultTemplate = `
   {{#if termsAndConditions}}
   <div class="pdf-page">
     <div class="terms-container">
-      <div class="terms-title">Terms & Conditions</div>
+      <div class="terms-title" style="font-size: 20px; text-decoration: underline; margin-bottom: 20px;"><strong><b>Terms & Conditions</b></strong></div>
       <div style="text-align: left;">
         {{{termsAndConditions}}}
       </div>
