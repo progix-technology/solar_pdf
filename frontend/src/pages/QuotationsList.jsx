@@ -46,24 +46,6 @@ const QuotationsList = () => {
       const htmlResponse = await api.get(`/quotations/${id}/pdf`);
       const htmlContent = htmlResponse.data;
 
-      const container = document.createElement('div');
-      container.innerHTML = htmlContent;
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.top = '0';
-      document.body.appendChild(container);
-
-      // Wait for all images inside the container to load before capturing
-      const images = container.getElementsByTagName('img');
-      const imagePromises = Array.from(images).map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
-      });
-      await Promise.all(imagePromises);
-
       const opt = {
         margin:       0.5,
         filename:     `Quotation_${quotationNumber}.pdf`,
@@ -72,8 +54,7 @@ const QuotationsList = () => {
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
 
-      await html2pdf().set(opt).from(container).save();
-      document.body.removeChild(container);
+      await html2pdf().set(opt).from(htmlContent).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
       if (error.response && typeof error.response.data === 'string') {

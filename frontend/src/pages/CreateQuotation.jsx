@@ -218,25 +218,6 @@ const CreateQuotation = () => {
           const htmlResponse = await api.get(`/quotations/${res.data._id}/pdf`);
           const htmlContent = htmlResponse.data;
 
-          // Create a temporary hidden container to hold the HTML
-          const container = document.createElement('div');
-          container.innerHTML = htmlContent;
-          container.style.position = 'absolute';
-          container.style.left = '-9999px';
-          container.style.top = '0';
-          document.body.appendChild(container);
-
-          // Wait for all images inside the container to load before capturing
-          const images = container.getElementsByTagName('img');
-          const imagePromises = Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => {
-              img.onload = resolve;
-              img.onerror = resolve;
-            });
-          });
-          await Promise.all(imagePromises);
-
           // Use html2pdf.js to generate the PDF
           const opt = {
             margin:       0.5,
@@ -246,9 +227,8 @@ const CreateQuotation = () => {
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
           };
 
-          // Generate, download, and clean up
-          await html2pdf().set(opt).from(container).save();
-          document.body.removeChild(container);
+          // Generate and download
+          await html2pdf().set(opt).from(htmlContent).save();
 
         } catch (pdfErr) {
           console.error('Error generating PDF on frontend:', pdfErr);
