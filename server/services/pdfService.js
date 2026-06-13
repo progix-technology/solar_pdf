@@ -10,7 +10,11 @@ if (!fs.existsSync(pdfDir)) {
 
 // Register Handlebars helpers
 handlebars.registerHelper('formatCurrency', function (value) {
-  return Number(value).toLocaleString('en-IN', {
+  const num = Number(value);
+  if (isNaN(num)) {
+    return value; // Return as-is if it's text like "TBD"
+  }
+  return num.toLocaleString('en-IN', {
     style: 'currency',
     currency: 'INR',
   });

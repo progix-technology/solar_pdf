@@ -445,11 +445,10 @@ const CreateQuotation = () => {
                 <TextField
                   variant="outlined"
                   size="small"
-                  type="number"
                   value={totals.grandTotal}
                   onChange={(e) => {
                     setIsManualTotal(true);
-                    setTotals({ ...totals, grandTotal: Number(e.target.value), subtotal: Number(e.target.value) });
+                    setTotals({ ...totals, grandTotal: e.target.value, subtotal: e.target.value });
                   }}
                   sx={{ width: 150, input: { fontWeight: 'bold', color: '#4CAF50', textAlign: 'right', fontSize: '1.25rem' } }}
                 />

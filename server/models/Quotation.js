@@ -12,10 +12,10 @@ const quotationSchema = new mongoose.Schema({
   columns: [{ type: String }],
   rows: [mongoose.Schema.Types.Mixed],
   
-  subtotal: { type: Number, default: 0 },
+  subtotal: { type: mongoose.Schema.Types.Mixed, default: 0 },
   gstPercentage: { type: Number, default: 18 },
-  gstAmount: { type: Number, default: 0 },
-  grandTotal: { type: Number, default: 0 },
+  gstAmount: { type: mongoose.Schema.Types.Mixed, default: 0 },
+  grandTotal: { type: mongoose.Schema.Types.Mixed, default: 0 },
   firstPageNotes: { type: String, default: '' },
   termsAndConditions: { type: String, default: '' },
   coverLetter: { type: String, default: '' },
