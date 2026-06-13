@@ -18,6 +18,9 @@ const quotationSchema = new mongoose.Schema({
   grandTotal: { type: Number, default: 0 },
   firstPageNotes: { type: String, default: '' },
   termsAndConditions: { type: String, default: '' },
+  coverLetter: { type: String, default: '' },
+  prePages: [{ type: String }],
+  postPages: [{ type: String }],
   
   templateId: { type: mongoose.Schema.Types.ObjectId, ref: 'Template', required: true }
 }, { timestamps: true });

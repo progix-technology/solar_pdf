@@ -21,6 +21,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import { AuthContext } from '../contexts/AuthContext';
 
 const drawerWidth = 240;
@@ -47,42 +48,72 @@ function Layout(props) {
   ];
 
   const drawer = (
-    <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold' }}>
-          PDF Gen Admin
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#4CAF50', color: 'white' }}>
+      <Toolbar sx={{ my: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <WbSunnyIcon sx={{ fontSize: 32, color: '#FBC02D', mr: 1 }} />
+        <Typography variant="h6" noWrap component="div" sx={{ fontWeight: '900', letterSpacing: 1 }}>
+          PROGIX
         </Typography>
       </Toolbar>
-      <Divider />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => {
-                navigate(item.path);
-                setMobileOpen(false);
-              }}
-            >
-              <ListItemIcon sx={{ color: location.pathname === item.path ? 'primary.main' : 'inherit' }}>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText 
-                primary={item.text} 
-                sx={{ color: location.pathname === item.path ? 'primary.main' : 'inherit' }} 
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-        <Divider sx={{ my: 1 }} />
+      <Divider sx={{ bgcolor: 'rgba(255,255,255,0.1)', mb: 2 }} />
+      <List sx={{ px: 2, flexGrow: 1 }}>
+        {menuItems.map((item) => {
+          const isSelected = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+          return (
+            <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
+              <ListItemButton
+                selected={isSelected}
+                onClick={() => {
+                  navigate(item.path);
+                  setMobileOpen(false);
+                }}
+                sx={{
+                  borderRadius: 2,
+                  bgcolor: isSelected ? 'rgba(255,255,255,0.15)' : 'transparent',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.1)'
+                  },
+                  '&.Mui-selected': {
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.25)'
+                    }
+                  }
+                }}
+              >
+                <ListItemIcon sx={{ color: isSelected ? '#FBC02D' : 'rgba(255,255,255,0.7)', minWidth: 40 }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.text} 
+                  sx={{ 
+                    '& .MuiTypography-root': { 
+                      fontWeight: isSelected ? 'bold' : 'medium',
+                      color: isSelected ? '#fff' : 'rgba(255,255,255,0.8)'
+                    } 
+                  }} 
+                />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
+      </List>
+      <Divider sx={{ bgcolor: 'rgba(255,255,255,0.1)', mb: 2 }} />
+      <List sx={{ px: 2, pb: 3 }}>
         <ListItem disablePadding>
-          <ListItemButton onClick={handleLogout}>
-            <ListItemIcon><LogoutIcon color="error" /></ListItemIcon>
-            <ListItemText primary="Logout" sx={{ color: 'error.main' }} />
+          <ListItemButton 
+            onClick={handleLogout}
+            sx={{
+              borderRadius: 2,
+              '&:hover': { bgcolor: 'rgba(244, 67, 54, 0.1)' }
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 40 }}><LogoutIcon sx={{ color: '#ef5350' }} /></ListItemIcon>
+            <ListItemText primary="Logout" sx={{ '& .MuiTypography-root': { color: '#ef5350', fontWeight: 'bold' } }} />
           </ListItemButton>
         </ListItem>
       </List>
-    </div>
+    </Box>
   );
 
   const container = window !== undefined ? () => window().document.body : undefined;
@@ -95,9 +126,10 @@ function Layout(props) {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          bgcolor: 'white',
-          color: 'text.primary',
-          boxShadow: 1
+          bgcolor: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(10px)',
+          color: '#4CAF50',
+          boxShadow: '0 4px 20px 0 rgba(0,0,0,0.05)'
         }}
       >
         <Toolbar>

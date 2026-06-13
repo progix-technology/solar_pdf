@@ -43,7 +43,9 @@ const getQuotationById = async (req, res) => {
       firstPageNotes,
       termsAndConditions,
       templateId,
-      quotationDate
+      quotationDate,
+      prePages,
+      postPages
     } = req.body;
 
     const quotationNumber = await generateQuotationNumber();
@@ -62,8 +64,11 @@ const getQuotationById = async (req, res) => {
       gstPercentage,
       gstAmount,
       grandTotal,
+      firstPageNotes,
       termsAndConditions,
-      templateId
+      templateId,
+      prePages,
+      postPages
     });
 
     const createdQuotation = await quotation.save();
@@ -92,7 +97,9 @@ const updateQuotation = async (req, res) => {
       firstPageNotes,
       termsAndConditions,
       templateId,
-      quotationDate
+      quotationDate,
+      prePages,
+      postPages
     } = req.body;
 
     const quotation = await Quotation.findById(id);
@@ -100,21 +107,28 @@ const updateQuotation = async (req, res) => {
       return res.status(404).json({ message: 'Quotation not found' });
     }
 
-    quotation.customerName = customerName || quotation.customerName;
-    quotation.customerAddress = customerAddress || quotation.customerAddress;
-    quotation.contactNumber = contactNumber || quotation.contactNumber;
-    quotation.siteAddress = siteAddress || quotation.siteAddress;
-    quotation.quotationTitle = quotationTitle || quotation.quotationTitle;
-    quotation.columns = columns || quotation.columns;
-    quotation.rows = rows || quotation.rows;
-    quotation.subtotal = subtotal || quotation.subtotal;
-    quotation.gstPercentage = gstPercentage || quotation.gstPercentage;
-    quotation.gstAmount = gstAmount || quotation.gstAmount;
-    quotation.grandTotal = grandTotal || quotation.grandTotal;
-    quotation.firstPageNotes = firstPageNotes || quotation.firstPageNotes;
-    quotation.termsAndConditions = termsAndConditions || quotation.termsAndConditions;
-    quotation.templateId = templateId || quotation.templateId;
-    quotation.quotationDate = quotationDate || quotation.quotationDate;
+    if (customerName !== undefined) quotation.customerName = customerName;
+    if (customerAddress !== undefined) quotation.customerAddress = customerAddress;
+    if (contactNumber !== undefined) quotation.contactNumber = contactNumber;
+    if (siteAddress !== undefined) quotation.siteAddress = siteAddress;
+    if (quotationTitle !== undefined) quotation.quotationTitle = quotationTitle;
+    if (columns !== undefined) quotation.columns = columns;
+    if (rows !== undefined) quotation.rows = rows;
+    if (subtotal !== undefined) quotation.subtotal = subtotal;
+    if (gstPercentage !== undefined) quotation.gstPercentage = gstPercentage;
+    if (gstAmount !== undefined) quotation.gstAmount = gstAmount;
+    if (grandTotal !== undefined) quotation.grandTotal = grandTotal;
+    if (firstPageNotes !== undefined) quotation.firstPageNotes = firstPageNotes;
+    if (termsAndConditions !== undefined) quotation.termsAndConditions = termsAndConditions;
+    if (templateId !== undefined) quotation.templateId = templateId;
+    if (quotationDate !== undefined) quotation.quotationDate = quotationDate;
+    if (prePages !== undefined) quotation.prePages = prePages;
+    if (postPages !== undefined) quotation.postPages = postPages;
+
+    quotation.markModified('columns');
+    quotation.markModified('rows');
+    quotation.markModified('prePages');
+    quotation.markModified('postPages');
 
     const updatedQuotation = await quotation.save();
     res.json(updatedQuotation);
@@ -159,10 +173,13 @@ const downloadQuotationPDF = async (req, res) => {
 
     let settings = await CompanySettings.findOne();
     if (!settings) {
-      settings = { companyName: 'My Company', logoUrl: '' };
+      settings = { companyName: 'SOLAR CIRCLE', logoUrl: '/logo.png' };
     }
 
     const companyData = settings.toObject ? settings.toObject() : { ...settings };
+    if (!companyData.logoUrl) {
+      companyData.logoUrl = '/logo.png';
+    }
     if (companyData.logoUrl && !companyData.logoUrl.startsWith('http://') && !companyData.logoUrl.startsWith('https://')) {
       companyData.logoUrl = `${req.protocol}://${req.get('host')}${companyData.logoUrl.startsWith('/') ? '' : '/'}${companyData.logoUrl}`;
     }
@@ -181,9 +198,13 @@ const downloadQuotationPDF = async (req, res) => {
       templateContent = templateContent.replace(/<img\s+/gi, '<img crossorigin="anonymous" ');
     }
 
-    const htmlString = await generatePDFBuffer(templateContent, pdfData);
+    const pdfBuffer = await generatePDFBuffer(templateContent, pdfData);
 
-    res.send(htmlString);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="Quotation_${quotation.quotationNumber}.pdf"`
+    });
+    res.send(pdfBuffer);
   } catch (error) {
     console.error('Download Error:', error);
     res.status(500).json({ message: 'Failed to generate HTML', error: error ? error.toString() : 'Unknown Error', stack: error ? error.stack : '' });
