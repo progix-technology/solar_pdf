@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const User = require('./models/User');
 const Template = require('./models/Template');
 
 dotenv.config();
@@ -10,28 +9,8 @@ const defaultTemplate = `
 <html>
 <head>
     <style>
-    body { font-family: 'Arial', 'Helvetica', sans-serif; margin: 0; padding: 0; color: #000; font-size: 13px; }
-    .company-header-container {
-      display: flex;
-      border: 1px solid #000;
-      margin-bottom: 0px;
-    }
-    .company-header-left {
-      width: 75%;
-      padding: 15px;
-      border-right: 1px solid #000;
-    }
-    .company-header-line {
-      margin-bottom: 5px;
-      font-size: 16px;
-    }
-    .company-header-right {
-      width: 25%;
-      padding: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    body { font-family: 'Arial', 'Helvetica', sans-serif; margin: 0; padding: 0; color: #000; font-size: 13px; background-color: #fff; }
+    .pdf-wrapper { width: 794px; margin: 0 auto; box-sizing: border-box; padding: 15px; }
     .company-logo {
       max-width: 100%;
       max-height: 160px;
@@ -54,10 +33,6 @@ const defaultTemplate = `
       color: #000;
       margin-left: 0;
     }
-
-    .info-section { display: flex; justify-content: space-between; margin-bottom: 30px; padding: 0 40px; }
-    .info-left { width: 60%; }
-    .info-right { width: 35%; padding-top: 50px; }
     
     .info-table td { border: none; padding: 3px 5px 3px 0; vertical-align: top; }
     .info-label { font-weight: bold; white-space: nowrap; }
@@ -75,7 +50,6 @@ const defaultTemplate = `
       font-weight: normal;
     }
     
-    .totals-container { display: flex; justify-content: center; padding: 0 20px; margin-bottom: 30px; }
     .totals-table { width: 80%; border-collapse: collapse; border: 2px solid #000; }
     .totals-table th, .totals-table td { border: 1px solid #000; padding: 6px 10px; text-align: left; }
     .totals-table th { font-weight: bold; width: 60%; }
@@ -85,7 +59,7 @@ const defaultTemplate = `
     
     .terms-page {
       page-break-before: always;
-      padding: 40px;
+      padding: 40px 20px;
     }
     .terms-title { font-weight: bold; margin-bottom: 15px; font-size: 16px; text-decoration: underline; }
 
@@ -106,46 +80,51 @@ const defaultTemplate = `
   </style>
 </head>
 <body>
+<div class="pdf-wrapper">
 
-  <!-- Company Header -->
-  <div class="company-header-container">
-    <div class="company-header-left">
-      <div class="company-header-line"><b>CompanyName: SOLAR CIRCLE</b></div>
-      <div class="company-header-line">Address: 159/19, Rakabganj, Lko-226018</div>
-      <div class="company-header-line">Phone No.: +91-8564964786/ +91-8299204171</div>
-      <div class="company-header-line"><b><span class="highlight-yellow">GSTIN: 09GXKPK4906A1ZH</span></b></div>
-      <div class="company-header-line">State: UP</div>
-    </div>
-    <div class="company-header-right">
-      {{#if company.logoUrl}}
-        <img src="http://localhost:5001{{company.logoUrl}}" alt="Logo" class="company-logo" />
-      {{/if}}
-    </div>
-  </div>
+  <!-- Company Header Table (Replacer for display: flex) -->
+  <table style="width: 100%; border: 1px solid #000; border-collapse: collapse; margin-bottom: 20px;">
+    <tr>
+      <td style="width: 75%; padding: 15px; border-right: 1px solid #000; vertical-align: top; text-align: left;">
+        <div style="margin-bottom: 5px; font-size: 16px;"><b>CompanyName: SOLAR CIRCLE</b></div>
+        <div style="margin-bottom: 5px; font-size: 16px;">Address: 159/19, Rakabganj, Lko-226018</div>
+        <div style="margin-bottom: 5px; font-size: 16px;">Phone No.: +91-8564964786/ +91-8299204171</div>
+        <div style="margin-bottom: 5px; font-size: 16px;"><b><span class="highlight-yellow">GSTIN: 09GXKPK4906A1ZH</span></b></div>
+        <div style="margin-bottom: 5px; font-size: 16px;">State: UP</div>
+      </td>
+      <td style="width: 25%; padding: 5px; vertical-align: middle; text-align: center;">
+        {{#if company.logoUrl}}
+          <img src="{{company.logoUrl}}" alt="Logo" class="company-logo" crossorigin="anonymous" />
+        {{/if}}
+      </td>
+    </tr>
+  </table>
 
   <!-- Quotation Banner -->
   <div class="quotation-banner">
     <div class="quotation-title">{{quotationTitle}}</div>
   </div>
 
-  <!-- Customer Info -->
-  <div class="info-section">
-    <div class="info-left">
-      <table class="info-table">
-        <tr><td class="info-label" colspan="2">To:</td></tr>
-        <tr><td class="info-label">Name:</td><td>{{customerName}}</td></tr>
-        <tr><td class="info-label">Address:</td><td>{{customerAddress}}</td></tr>
-        <tr><td class="info-label">Contact No.:</td><td>{{contactNumber}}</td></tr>
-        <tr><td class="info-label">Site Address.</td><td>{{siteAddress}}</td></tr>
-      </table>
-    </div>
-    <div class="info-right">
-      <table class="info-table">
-        <tr><td class="info-label">Quotation No.:</td><td>{{quotationNumber}}</td></tr>
-        <tr><td class="info-label">Quotation Date:</td><td>{{quotationDate}}</td></tr>
-      </table>
-    </div>
-  </div>
+  <!-- Customer Info Table (Replacer for display: flex) -->
+  <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
+    <tr>
+      <td style="width: 60%; vertical-align: top; padding: 0 20px 0 10px; text-align: left;">
+        <table class="info-table" style="width: 100%; border-collapse: collapse;">
+          <tr><td class="info-label" colspan="2" style="font-weight: bold; padding: 3px 5px 3px 0;">To:</td></tr>
+          <tr><td class="info-label" style="font-weight: bold; padding: 3px 5px 3px 0; white-space: nowrap; width: 100px;">Name:</td><td style="padding: 3px 5px;">{{customerName}}</td></tr>
+          <tr><td class="info-label" style="font-weight: bold; padding: 3px 5px 3px 0; white-space: nowrap; width: 100px;">Address:</td><td style="padding: 3px 5px;">{{customerAddress}}</td></tr>
+          <tr><td class="info-label" style="font-weight: bold; padding: 3px 5px 3px 0; white-space: nowrap; width: 100px;">Contact No.:</td><td style="padding: 3px 5px;">{{contactNumber}}</td></tr>
+          <tr><td class="info-label" style="font-weight: bold; padding: 3px 5px 3px 0; white-space: nowrap; width: 100px;">Site Address:</td><td style="padding: 3px 5px;">{{siteAddress}}</td></tr>
+        </table>
+      </td>
+      <td style="width: 40%; vertical-align: top; padding: 25px 10px 0 20px; text-align: left;">
+        <table class="info-table" style="width: 100%; border-collapse: collapse;">
+          <tr><td class="info-label" style="font-weight: bold; padding: 3px 5px 3px 0; white-space: nowrap; width: 120px;">Quotation No.:</td><td style="padding: 3px 5px;">{{quotationNumber}}</td></tr>
+          <tr><td class="info-label" style="font-weight: bold; padding: 3px 5px 3px 0; white-space: nowrap; width: 120px;">Quotation Date:</td><td style="padding: 3px 5px;">{{quotationDate}}</td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 
   <!-- Dynamic Table -->
   <div class="main-table-container">
@@ -170,39 +149,44 @@ const defaultTemplate = `
   </div>
 
   {{#if firstPageNotes}}
-  <div style="padding: 0 40px; margin-bottom: 20px;">
+  <div style="padding: 0 20px; margin-bottom: 20px; text-align: left;">
     {{{firstPageNotes}}}
   </div>
   {{/if}}
 
-  <!-- Totals Section -->
-  <div class="totals-container">
-    <table class="totals-table">
-      <tr>
-        <th>Total Amount</th>
-        <td>{{formatCurrency subtotal}} /-</td>
-      </tr>
-      <tr>
-        <th>GST</th>
-        <td>Inc/-</td>
-      </tr>
-      <tr>
-        <th class="highlight-yellow">Grand Total</th>
-        <td class="highlight-yellow">{{formatCurrency grandTotal}} /-</td>
-      </tr>
-    </table>
-  </div>
+  <!-- Totals Section Table (Replacer for display: flex) -->
+  <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
+    <tr>
+      <td align="center">
+        <table class="totals-table" style="width: 80%; border-collapse: collapse; border: 2px solid #000; text-align: left;">
+          <tr>
+            <th style="border: 1px solid #000; padding: 6px 10px; font-weight: bold; width: 60%;">Total Amount</th>
+            <td style="border: 1px solid #000; padding: 6px 10px; width: 40%;">{{formatCurrency subtotal}} /-</td>
+          </tr>
+          <tr>
+            <th style="border: 1px solid #000; padding: 6px 10px; font-weight: bold;">GST</th>
+            <td style="border: 1px solid #000; padding: 6px 10px;">Inc/-</td>
+          </tr>
+          <tr>
+            <th class="highlight-yellow" style="border: 1px solid #000; padding: 6px 10px; font-weight: bold;">Grand Total</th>
+            <td class="highlight-yellow" style="border: 1px solid #000; padding: 6px 10px;">{{formatCurrency grandTotal}} /-</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 
   <!-- Page 2: Terms and Conditions -->
   {{#if termsAndConditions}}
   <div class="terms-page">
     <div class="terms-title">Terms & Conditions</div>
-    <div>
+    <div style="text-align: left;">
       {{{termsAndConditions}}}
     </div>
   </div>
   {{/if}}
 
+</div>
 </body>
 </html>
 `;
@@ -211,16 +195,7 @@ const seedData = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
 
-    // Seed User
-    await User.deleteMany();
-    await User.create({
-      name: 'Admin User',
-      email: 'admin@example.com',
-      password: 'password123',
-      role: 'admin'
-    });
-
-    // Seed Template
+    // Seed Template ONLY
     await Template.deleteMany();
     await Template.create({
       name: 'Modern Professional Default',
@@ -228,7 +203,7 @@ const seedData = async () => {
       isDefault: true
     });
 
-    console.log('Data Seeded!');
+    console.log('Template Seeded successfully!');
     process.exit();
   } catch (error) {
     console.error(error);
