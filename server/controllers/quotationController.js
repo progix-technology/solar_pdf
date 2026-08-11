@@ -26,7 +26,7 @@ const getQuotationById = async (req, res) => {
   }
 };
 
-  const createQuotation = async (req, res) => {
+const createQuotation = async (req, res) => {
   try {
     const {
       customerName,
@@ -67,8 +67,8 @@ const getQuotationById = async (req, res) => {
       firstPageNotes,
       termsAndConditions,
       templateId,
-      prePages,
-      postPages
+      prePages: prePages || [],
+      postPages: postPages || []
     });
 
     const createdQuotation = await quotation.save();
@@ -81,7 +81,6 @@ const getQuotationById = async (req, res) => {
 
 const updateQuotation = async (req, res) => {
   try {
-    const { id } = req.params;
     const {
       customerName,
       customerAddress,
@@ -102,7 +101,8 @@ const updateQuotation = async (req, res) => {
       postPages
     } = req.body;
 
-    const quotation = await Quotation.findById(id);
+    const quotation = await Quotation.findById(req.params.id);
+
     if (!quotation) {
       return res.status(404).json({ message: 'Quotation not found' });
     }
@@ -151,6 +151,44 @@ const deleteQuotation = async (req, res) => {
     } else {
       res.status(404).json({ message: 'Quotation not found' });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const duplicateQuotation = async (req, res) => {
+  try {
+    const original = await Quotation.findById(req.params.id);
+    if (!original) {
+      return res.status(404).json({ message: 'Original quotation not found' });
+    }
+
+    const { customerName } = req.body;
+    const quotationNumber = await generateQuotationNumber();
+
+    const newQuotation = new Quotation({
+      quotationNumber,
+      quotationDate: Date.now(),
+      quotationTitle: original.quotationTitle,
+      customerName: (customerName && customerName.trim()) ? customerName.trim() : original.customerName,
+      customerAddress: original.customerAddress,
+      contactNumber: original.contactNumber,
+      siteAddress: original.siteAddress,
+      columns: original.columns,
+      rows: original.rows,
+      subtotal: original.subtotal,
+      gstPercentage: original.gstPercentage,
+      gstAmount: original.gstAmount,
+      grandTotal: original.grandTotal,
+      firstPageNotes: original.firstPageNotes,
+      termsAndConditions: original.termsAndConditions,
+      templateId: original.templateId,
+      prePages: original.prePages,
+      postPages: original.postPages
+    });
+
+    const savedQuotation = await newQuotation.save();
+    res.status(201).json(savedQuotation);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -219,5 +257,6 @@ module.exports = {
   createQuotation,
   updateQuotation,
   deleteQuotation,
+  duplicateQuotation,
   downloadQuotationPDF
 };

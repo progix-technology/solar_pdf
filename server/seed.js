@@ -10,14 +10,16 @@ const defaultTemplate = `
 <head>
     <style>
     body { font-family: 'Arial', 'Helvetica', sans-serif; margin: 0; padding: 0; color: #000; font-size: 13px; background-color: #fff; }
-    .pdf-wrapper { width: 794px; margin: 0 auto; box-sizing: border-box; }
+    html, body { margin: 0 !important; padding: 0 !important; }
+    .pdf-wrapper { width: 100%; margin: 0; padding: 0; box-sizing: border-box; }
     
     .pdf-page {
-      width: 794px;
+      width: 100%;
       box-sizing: border-box;
-      border: 1px solid #000;
+      border: none;
       background-color: transparent;
-      margin: 0 auto 10px auto;
+      margin: 0;
+      padding: 0;
     }
     
     body::before {
@@ -34,7 +36,7 @@ const defaultTemplate = `
     }
     
     .pdf-page-content {
-      padding: 0 40px 20px 40px;
+      padding: 0;
       width: 100%;
       box-sizing: border-box;
       word-wrap: break-word;
@@ -114,7 +116,7 @@ const defaultTemplate = `
       word-wrap: break-word;
       overflow-wrap: break-word;
     }
-    .terms-title { font-weight: bold; margin-bottom: 15px; font-size: 16px; text-decoration: underline; }
+    .terms-title { font-weight: bold; margin-bottom: 20px; font-size: 26px; text-decoration: none; color: #000; }
 
     /* Rich Text Support (ReactQuill & Copy-Paste overrides) */
     .rich-text-content {
@@ -153,6 +155,12 @@ const defaultTemplate = `
       max-width: 100% !important;
     }
 
+    /* PAGE BREAK RULES */
+    .avoid-break, .notes-box, .rich-text-content, .terms-container, .main-table, .totals-table {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
     @media print {
       .pdf-page {
         margin: 0;
@@ -179,8 +187,10 @@ const defaultTemplate = `
 
   {{#each prePages}}
     <div class="pdf-page">
-      <div class="pdf-page-content" style="padding: 40px;">
-        <div class="rich-text-content">{{{this}}}</div>
+      <div class="pdf-page-content" style="padding: 20px; margin: 0; width: 100%; box-sizing: border-box;">
+        <div class="cover-container avoid-break" style="border: 1px solid #38761d; border-radius: 6px; padding: 25px; background: #ffffff; box-sizing: border-box; page-break-inside: avoid !important; break-inside: avoid !important;">
+          <div class="rich-text-content" style="padding: 0 !important;">{{{this}}}</div>
+        </div>
       </div>
     </div>
     <div class="html2pdf__page-break"></div>
@@ -189,14 +199,14 @@ const defaultTemplate = `
   <!-- Page 1 -->
   <div class="pdf-page">
     <!-- Company Header Table (Replacer for display: flex) -->
-    <table style="width: 100%; border: 1px solid #000; border-collapse: collapse; margin-bottom: 0;">
+    <table style="width: 100%; border: 1px solid #000; border-collapse: collapse; margin: 0; padding: 0; box-sizing: border-box;">
       <tr>
         <td style="width: 70%; padding: 15px; vertical-align: top; text-align: left; border-right: 1px solid #000;">
-          <div style="margin-bottom: 5px; font-size: 16px; color: #000;"><b>CompanyName: SOLAR CIRCLE</b></div>
-          <div style="margin-bottom: 5px; font-size: 16px;">Address: 159/19, Rakabganj, Lko-226018</div>
-          <div style="margin-bottom: 5px; font-size: 16px;">Phone No.: +91-8564964786/ +91-8299204171</div>
-          <div style="margin-bottom: 5px; font-size: 16px;"><b><span class="highlight-yellow">GSTIN: 09GXKPK4906A1ZH</span></b></div>
-          <div style="margin-bottom: 5px; font-size: 16px;">State: UP</div>
+          <div style="margin-bottom: 5px; font-size: 16px; color: #000;"><b>CompanyName: {{company.companyName}}</b></div>
+          <div style="margin-bottom: 5px; font-size: 16px;">Address: {{company.address}}</div>
+          <div style="margin-bottom: 5px; font-size: 16px;">Phone No.: {{company.phoneNumbers}}</div>
+          <div style="margin-bottom: 5px; font-size: 16px;"><b><span class="highlight-yellow">GSTIN: {{company.gstNumber}}</span></b></div>
+          <div style="margin-bottom: 5px; font-size: 16px;">State: {{company.state}}</div>
         </td>
         <td style="width: 30%; padding: 5px; vertical-align: middle; text-align: center;">
           {{#if company.logoUrl}}
@@ -206,12 +216,12 @@ const defaultTemplate = `
       </tr>
     </table>
 
-    <div class="pdf-page-content" style="padding: 0;">
+    <div class="pdf-page-content" style="padding: 0; margin: 0; width: 100%; box-sizing: border-box;">
       <!-- Thin Dark Green Bar -->
-      <div style="height: 18px; background-color: #38761d; width: 100%;"></div>
+      <div style="height: 18px; background-color: #38761d; width: 100%; margin: 0; padding: 0; box-sizing: border-box;"></div>
       
       <!-- Quotation Banner -->
-      <div style="background-color: #e8eedb; padding: 8px 0; margin-bottom: 20px; text-align: center; border-bottom: 1px solid #000;">
+      <div style="background-color: #e8eedb; width: 100%; padding: 8px 0; margin: 0 0 20px 0; text-align: center; border-bottom: 1px solid #000; box-sizing: border-box;">
         <span style="display: inline-block; background-color: #ffff00; font-size: 24px; font-weight: bold; color: #000; padding: 2px 30px;">{{quotationTitle}}</span>
       </div>
 
@@ -264,31 +274,55 @@ const defaultTemplate = `
 
       {{#if firstPageNotes}}
       <div style="padding: 0; margin-bottom: 20px; text-align: left;">
-        <div class="rich-text-content">{{{firstPageNotes}}}</div>
+        <div class="notes-box avoid-break" style="border: 1px solid #38761d; padding: 16px; border-radius: 6px; background: #ffffff; box-sizing: border-box; page-break-inside: avoid !important; break-inside: avoid !important;">
+          <div class="rich-text-content" style="margin-bottom: 15px;">{{{firstPageNotes}}}</div>
+          
+          <!-- Totals Section Table Inside Box -->
+          <table style="width: 100%; margin-top: 20px; margin-bottom: 5px; border-collapse: collapse;">
+            <tr>
+              <td align="center">
+                <table class="totals-table avoid-break" style="width: 60%; border-collapse: collapse; border: 1px solid #38761d; text-align: left;">
+                  <tr>
+                    <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold; width: 60%;">Total Amount</th>
+                    <td style="border: 1px solid #38761d; padding: 6px 10px; width: 40%;">{{formatCurrency subtotal}} /-</td>
+                  </tr>
+                  <tr>
+                    <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">GST</th>
+                    <td style="border: 1px solid #38761d; padding: 6px 10px;">Inc/-</td>
+                  </tr>
+                  <tr>
+                    <th class="highlight-yellow" style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">Grand Total</th>
+                    <td class="highlight-yellow" style="border: 1px solid #38761d; padding: 6px 10px;">{{formatCurrency grandTotal}} /-</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
       </div>
-      {{/if}}
-
-      <!-- Totals Section Table (Replacer for display: flex) -->
+      {{else}}
+      <!-- Totals Section Table (when no notes) -->
       <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
         <tr>
           <td align="center">
-            <table class="totals-table" style="width: 60%; border-collapse: collapse; border: 1px solid #38761d; text-align: left;">
+            <table class="totals-table avoid-break" style="width: 60%; border-collapse: collapse; border: 1px solid #38761d; text-align: left;">
               <tr>
                 <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold; width: 60%;">Total Amount</th>
                 <td style="border: 1px solid #38761d; padding: 6px 10px; width: 40%;">{{formatCurrency subtotal}} /-</td>
               </tr>
               <tr>
-                <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">GST ({{gstPercentage}}%)</th>
-                <td style="border: 1px solid #38761d; padding: 6px 10px;">{{formatCurrency gstAmount}} /-</td>
+                <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">GST</th>
+                <td style="border: 1px solid #38761d; padding: 6px 10px;">Inc/-</td>
               </tr>
               <tr>
-                <th style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">Grand Total</th>
-                <td style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold; background-color: #e8eedb;">{{formatCurrency grandTotal}} /-</td>
+                <th class="highlight-yellow" style="border: 1px solid #38761d; padding: 6px 10px; font-weight: bold;">Grand Total</th>
+                <td class="highlight-yellow" style="border: 1px solid #38761d; padding: 6px 10px;">{{formatCurrency grandTotal}} /-</td>
               </tr>
             </table>
           </td>
         </tr>
       </table>
+      {{/if}}
       </div>
     </div>
   </div>
@@ -298,9 +332,14 @@ const defaultTemplate = `
   <!-- Page 2: Terms and Conditions -->
   {{#if termsAndConditions}}
   <div class="pdf-page">
-    <div class="terms-container">
-      <div class="terms-title" style="font-size: 20px; text-decoration: underline; margin-bottom: 20px;"><strong><b>Terms &amp; Conditions</b></strong></div>
-      <div class="rich-text-content">{{{termsAndConditions}}}</div>
+    <div class="pdf-page-content" style="padding: 0; margin: 0; width: 100%; box-sizing: border-box;">
+      <div style="border: 1px solid #000; border-collapse: collapse; margin: 0; padding: 6px 15px; box-sizing: border-box; background: #fdfdfd;">
+        <div style="font-size: 26px; font-weight: bold; text-decoration: none; color: #000;">Terms &amp; Conditions</div>
+      </div>
+      <div style="height: 10px; background-color: #38761d; width: 100%; margin: 0; padding: 0;"></div>
+      <div class="terms-container avoid-break" style="padding: 20px 25px; margin: 0; border: 1px solid #000; border-top: none; box-sizing: border-box; background: #ffffff; page-break-inside: avoid !important; break-inside: avoid !important;">
+        <div class="rich-text-content" style="padding: 0 !important;">{{{termsAndConditions}}}</div>
+      </div>
     </div>
   </div>
   <div class="html2pdf__page-break"></div>
@@ -309,8 +348,10 @@ const defaultTemplate = `
   <!-- Post Pages / Annexures -->
   {{#each postPages}}
   <div class="pdf-page">
-    <div class="pdf-page-content" style="padding: 40px;">
-      <div class="rich-text-content">{{{this}}}</div>
+    <div class="pdf-page-content" style="padding: 20px; margin: 0; width: 100%; box-sizing: border-box;">
+      <div class="annexure-container avoid-break" style="border: 1px solid #38761d; border-radius: 6px; padding: 25px; background: #ffffff; box-sizing: border-box; page-break-inside: avoid !important; break-inside: avoid !important;">
+        <div class="rich-text-content" style="padding: 0 !important;">{{{this}}}</div>
+      </div>
     </div>
   </div>
   <div class="html2pdf__page-break"></div>

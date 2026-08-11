@@ -42,6 +42,16 @@ const generatePDFBuffer = async (templateContent, data) => {
     html = html.replace(/&#160;/g, ' ');
     html = html.replace(/\u00A0/g, ' ');
 
+    // CRITICAL: Inject a hard 794px width lock directly into the HTML.
+    // html2pdf renders content in a hidden div. Without this, the div inherits
+    // the browser window width, causing white space on the right side of the PDF.
+    const widthLockStyle = `<style>
+      html, body { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; }
+      .pdf-wrapper { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; }
+      .pdf-page { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; }
+    </style>`;
+    html = html.replace('</head>', widthLockStyle + '</head>');
+
     // Return the raw HTML string instead of generating a PDF on the backend
     return html;
   } catch (error) {

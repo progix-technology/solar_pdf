@@ -6,6 +6,7 @@ const {
   createQuotation,
   updateQuotation,
   deleteQuotation,
+  duplicateQuotation,
   downloadQuotationPDF,
 } = require('../controllers/quotationController');
 const { protect } = require('../middleware/authMiddleware');
@@ -18,6 +19,9 @@ router.route('/:id')
   .get(protect, getQuotationById)
   .put(protect, updateQuotation)
   .delete(protect, deleteQuotation);
+
+router.route('/:id/duplicate')
+  .post(protect, duplicateQuotation);
 
 router.route('/:id/pdf')
   .get(protect, downloadQuotationPDF);

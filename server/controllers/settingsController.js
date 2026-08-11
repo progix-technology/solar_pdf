@@ -25,6 +25,7 @@ const updateSettings = async (req, res) => {
       address,
       gstNumber,
       phoneNumbers,
+      state,
       email,
       footer,
       termsAndConditions,
@@ -36,13 +37,14 @@ const updateSettings = async (req, res) => {
       settings = new CompanySettings();
     }
 
-    settings.companyName = companyName || settings.companyName;
-    settings.address = address || settings.address;
-    settings.gstNumber = gstNumber || settings.gstNumber;
-    settings.phoneNumbers = phoneNumbers || settings.phoneNumbers;
-    settings.email = email || settings.email;
-    settings.footer = footer || settings.footer;
-    settings.termsAndConditions = termsAndConditions || settings.termsAndConditions;
+    if (companyName !== undefined) settings.companyName = companyName;
+    if (address !== undefined) settings.address = address;
+    if (gstNumber !== undefined) settings.gstNumber = gstNumber;
+    if (phoneNumbers !== undefined) settings.phoneNumbers = phoneNumbers;
+    if (state !== undefined) settings.state = state;
+    if (email !== undefined) settings.email = email;
+    if (footer !== undefined) settings.footer = footer;
+    if (termsAndConditions !== undefined) settings.termsAndConditions = termsAndConditions;
 
     if (req.file) {
       if (req.file.path && req.file.path.startsWith('http')) {
