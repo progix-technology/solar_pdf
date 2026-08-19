@@ -34,14 +34,10 @@ const AdminRoute = ({ children }) => {
 import SplashScreen from './components/SplashScreen';
 
 function App() {
-  const [showSplash, setShowSplash] = React.useState(() => {
-    // Show splash screen once per browser session
-    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
-    return !hasSeenSplash;
-  });
+  const [showSplash, setShowSplash] = React.useState(true);
 
   const handleSplashFinish = () => {
-    sessionStorage.setItem('hasSeenSplash', 'true');
+    console.log("App: handleSplashFinish triggered, setting showSplash to false");
     setShowSplash(false);
   };
 
