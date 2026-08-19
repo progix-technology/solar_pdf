@@ -22,7 +22,8 @@ const quotationSchema = new mongoose.Schema({
   prePages: [{ type: String }],
   postPages: [{ type: String }],
   
-  templateId: { type: mongoose.Schema.Types.ObjectId, ref: 'Template', required: true }
+  templateId: { type: mongoose.Schema.Types.ObjectId, ref: 'Template', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Quotation', quotationSchema);

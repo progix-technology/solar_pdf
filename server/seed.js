@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Template = require('./models/Template');
+const User = require('./models/User');
 
 dotenv.config();
 
@@ -366,15 +367,24 @@ const seedData = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
 
-    // Seed Template ONLY
+    // Seed Template
     await Template.deleteMany();
     await Template.create({
       name: 'Modern Professional Default',
       content: defaultTemplate,
       isDefault: true
     });
-
     console.log('Template Seeded successfully!');
+
+    // Seed default Admin User
+    await User.deleteMany();
+    await User.create({
+      name: 'Admin User',
+      email: 'admin@example.com',
+      password: 'admin123',
+      role: 'admin'
+    });
+    console.log('Admin User Seeded successfully!');
     process.exit();
   } catch (error) {
     console.error(error);

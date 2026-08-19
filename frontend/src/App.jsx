@@ -7,8 +7,8 @@ import Login from './pages/Login';
 import CreateQuotation from './pages/CreateQuotation';
 import HeaderImage from './pages/HeaderImage';
 import QuotationsList from './pages/QuotationsList';
-
-// ... theme definition ...
+import UserManagement from './pages/UserManagement';
+import ProfileSettings from './pages/ProfileSettings';
 
 const theme = createTheme({
   palette: {
@@ -23,6 +23,12 @@ const PrivateRoute = ({ children }) => {
   const { user, loading } = React.useContext(AuthContext);
   if (loading) return null;
   return user ? children : <Navigate to="/login" />;
+};
+
+const AdminRoute = ({ children }) => {
+  const { user, loading } = React.useContext(AuthContext);
+  if (loading) return null;
+  return user && user.role === 'admin' ? children : <Navigate to="/quotations" />;
 };
 
 function App() {
@@ -45,6 +51,12 @@ function App() {
               <Route path="create-quotation" element={<CreateQuotation />} />
               <Route path="edit-quotation/:id" element={<CreateQuotation />} />
               <Route path="header-image" element={<HeaderImage />} />
+              <Route path="profile" element={<ProfileSettings />} />
+              <Route path="users" element={
+                <AdminRoute>
+                  <UserManagement />
+                </AdminRoute>
+              } />
             </Route>
 
           </Routes>

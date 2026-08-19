@@ -6,7 +6,7 @@ const { generatePDFBuffer } = require('../services/pdfService');
 
 const getQuotations = async (req, res) => {
   try {
-    const quotations = await Quotation.find({}).sort({ createdAt: -1 });
+    const quotations = await Quotation.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.json(quotations);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -15,7 +15,7 @@ const getQuotations = async (req, res) => {
 
 const getQuotationById = async (req, res) => {
   try {
-    const quotation = await Quotation.findById(req.params.id);
+    const quotation = await Quotation.findOne({ _id: req.params.id, userId: req.user._id });
     if (quotation) {
       res.json(quotation);
     } else {
@@ -68,7 +68,8 @@ const createQuotation = async (req, res) => {
       termsAndConditions,
       templateId,
       prePages: prePages || [],
-      postPages: postPages || []
+      postPages: postPages || [],
+      userId: req.user._id
     });
 
     const createdQuotation = await quotation.save();
@@ -101,7 +102,7 @@ const updateQuotation = async (req, res) => {
       postPages
     } = req.body;
 
-    const quotation = await Quotation.findById(req.params.id);
+    const quotation = await Quotation.findOne({ _id: req.params.id, userId: req.user._id });
 
     if (!quotation) {
       return res.status(404).json({ message: 'Quotation not found' });
@@ -143,7 +144,7 @@ const updateQuotation = async (req, res) => {
 
 const deleteQuotation = async (req, res) => {
   try {
-    const quotation = await Quotation.findById(req.params.id);
+    const quotation = await Quotation.findOne({ _id: req.params.id, userId: req.user._id });
 
     if (quotation) {
       await Quotation.deleteOne({ _id: req.params.id });
@@ -158,7 +159,7 @@ const deleteQuotation = async (req, res) => {
 
 const duplicateQuotation = async (req, res) => {
   try {
-    const original = await Quotation.findById(req.params.id);
+    const original = await Quotation.findOne({ _id: req.params.id, userId: req.user._id });
     if (!original) {
       return res.status(404).json({ message: 'Original quotation not found' });
     }
@@ -184,7 +185,8 @@ const duplicateQuotation = async (req, res) => {
       termsAndConditions: original.termsAndConditions,
       templateId: original.templateId,
       prePages: original.prePages,
-      postPages: original.postPages
+      postPages: original.postPages,
+      userId: req.user._id
     });
 
     const savedQuotation = await newQuotation.save();
@@ -196,7 +198,8 @@ const duplicateQuotation = async (req, res) => {
 
 const downloadQuotationPDF = async (req, res) => {
   try {
-    const quotation = await Quotation.findById(req.params.id);
+    // PDF link must be authorized for the user
+    const quotation = await Quotation.findOne({ _id: req.params.id, userId: req.user._id });
     if (!quotation) {
       return res.status(404).json({ message: 'Quotation not found' });
     }
@@ -212,9 +215,14 @@ const downloadQuotationPDF = async (req, res) => {
       return res.status(500).json({ message: 'No template available in the system.' });
     }
 
-    let settings = await CompanySettings.findOne();
+    // Fetch user-specific company settings
+    let settings = await CompanySettings.findOne({ userId: req.user._id });
     if (!settings) {
-      settings = { companyName: 'SOLAR CIRCLE', logoUrl: '/logo.png' };
+      settings = await CompanySettings.create({
+        userId: req.user._id,
+        companyName: '',
+        logoUrl: ''
+      });
     }
 
     const companyData = settings.toObject ? settings.toObject() : { ...settings };
@@ -232,6 +240,8 @@ const downloadQuotationPDF = async (req, res) => {
 
     // Clean any hardcoded backend URLs from logo image src in the template
     let templateContent = template.content;
+    const themeColor = companyData.themeColor || '#38761d';
+    templateContent = templateContent.replace(/#38761d/g, themeColor);
     templateContent = templateContent.replace(/src="https?:\/\/[a-zA-Z0-9.-]+(:\d+)?\{\{company\.logoUrl\}\}"/g, 'src="{{company.logoUrl}}"');
 
     // Add crossorigin="anonymous" to the image tags to avoid tainted canvas errors on the frontend

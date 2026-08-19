@@ -21,6 +21,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import PeopleIcon from '@mui/icons-material/People';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { AuthContext } from '../contexts/AuthContext';
 
 const drawerWidth = 240;
@@ -28,7 +30,7 @@ const drawerWidth = 240;
 function Layout(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,7 +46,12 @@ function Layout(props) {
   const menuItems = [
     { text: 'Dashboard', icon: <HomeIcon sx={{ fontSize: 20 }} />, path: '/quotations' },
     { text: 'Company Settings', icon: <SettingsIcon sx={{ fontSize: 20 }} />, path: '/header-image' },
+    { text: 'Profile Settings', icon: <AccountCircleIcon sx={{ fontSize: 20 }} />, path: '/profile' }
   ];
+
+  if (user && user.role === 'admin') {
+    menuItems.push({ text: 'User Management', icon: <PeopleIcon sx={{ fontSize: 20 }} />, path: '/users' });
+  }
 
   const drawer = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#166534', color: 'white' }}>
@@ -68,7 +75,9 @@ function Layout(props) {
         {menuItems.map((item, index) => {
           const isSelected = 
             (item.text === 'Company Settings' && location.pathname === '/header-image') ||
-            (item.text === 'Dashboard' && location.pathname !== '/header-image');
+            (item.text === 'User Management' && location.pathname === '/users') ||
+            (item.text === 'Profile Settings' && location.pathname === '/profile') ||
+            (item.text === 'Dashboard' && location.pathname !== '/header-image' && location.pathname !== '/users' && location.pathname !== '/profile');
 
           return (
             <ListItem key={item.text + index} disablePadding sx={{ mb: 0.8 }}>
@@ -172,8 +181,10 @@ function Layout(props) {
     const isEdit = location.pathname.startsWith('/edit-quotation');
     const isCreate = location.pathname === '/create-quotation';
     const isSettings = location.pathname === '/header-image';
+    const isUsers = location.pathname === '/users';
+    const isProfile = location.pathname === '/profile';
 
-    const currentText = isEdit ? 'Edit Quotation' : isCreate ? 'Create Quotation' : isSettings ? 'Company Settings' : '';
+    const currentText = isEdit ? 'Edit Quotation' : isCreate ? 'Create Quotation' : isSettings ? 'Company Settings' : isUsers ? 'User Management' : isProfile ? 'Profile Settings' : '';
 
     return (
       <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>

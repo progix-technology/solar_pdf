@@ -1,13 +1,17 @@
 const CompanySettings = require('../models/CompanySettings');
 
-// @desc    Get company settings
+// @desc    Get company settings for authenticated user
 // @route   GET /api/settings
 // @access  Private
 const getSettings = async (req, res) => {
   try {
-    let settings = await CompanySettings.findOne();
+    let settings = await CompanySettings.findOne({ userId: req.user._id });
     if (!settings) {
-      settings = await CompanySettings.create({});
+      settings = await CompanySettings.create({
+        userId: req.user._id,
+        companyName: '',
+        logoUrl: ''
+      });
     }
     res.json(settings);
   } catch (error) {
@@ -15,7 +19,7 @@ const getSettings = async (req, res) => {
   }
 };
 
-// @desc    Update company settings
+// @desc    Update company settings for authenticated user
 // @route   PUT /api/settings
 // @access  Private
 const updateSettings = async (req, res) => {
@@ -29,12 +33,13 @@ const updateSettings = async (req, res) => {
       email,
       footer,
       termsAndConditions,
+      themeColor,
     } = req.body;
 
-    let settings = await CompanySettings.findOne();
+    let settings = await CompanySettings.findOne({ userId: req.user._id });
 
     if (!settings) {
-      settings = new CompanySettings();
+      settings = new CompanySettings({ userId: req.user._id });
     }
 
     if (companyName !== undefined) settings.companyName = companyName;
@@ -45,6 +50,7 @@ const updateSettings = async (req, res) => {
     if (email !== undefined) settings.email = email;
     if (footer !== undefined) settings.footer = footer;
     if (termsAndConditions !== undefined) settings.termsAndConditions = termsAndConditions;
+    if (themeColor !== undefined) settings.themeColor = themeColor;
 
     if (req.file) {
       if (req.file.path && req.file.path.startsWith('http')) {
@@ -67,4 +73,7 @@ const updateSettings = async (req, res) => {
   }
 };
 
-module.exports = { getSettings, updateSettings };
+module.exports = {
+  getSettings,
+  updateSettings,
+};

@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import api from '../utils/axiosConfig';
 
 const SectionHeader = ({ number, title, subtitle }) => (
@@ -53,6 +54,7 @@ const HeaderImage = () => {
     phoneNumbers: '',
     gstNumber: '',
     state: '',
+    themeColor: '#38761d'
   });
   const [logoFile, setLogoFile] = useState(null);
   const [currentImage, setCurrentImage] = useState('');
@@ -70,7 +72,8 @@ const HeaderImage = () => {
           address: data.address || '',
           phoneNumbers: data.phoneNumbers || '',
           gstNumber: data.gstNumber || '',
-          state: data.state || 'UP',
+          state: data.state || '',
+          themeColor: data.themeColor || '#38761d',
         });
         if (data.logoUrl) {
           const baseUrl = api.defaults.baseURL.replace('/api', '');
@@ -111,6 +114,7 @@ const HeaderImage = () => {
     data.append('phoneNumbers', formData.phoneNumbers);
     data.append('gstNumber', formData.gstNumber);
     data.append('state', formData.state);
+    data.append('themeColor', formData.themeColor || '#38761d');
 
     if (logoFile) {
       data.append('logo', logoFile);
@@ -137,8 +141,107 @@ const HeaderImage = () => {
 
   if (fetching) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-        <CircularProgress sx={{ color: '#2e7d32' }} />
+      <Box 
+        display="flex" 
+        flexDirection="column" 
+        justifyContent="center" 
+        alignItems="center" 
+        minHeight="70vh"
+        sx={{
+          background: 'transparent',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            p: 4,
+            borderRadius: '16px',
+            bgcolor: '#ffffff',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Rotating Sun Icon */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+              bgcolor: '#fef08a', // Soft yellow background
+              mb: 2.5,
+              animation: 'spin 4s linear infinite',
+              border: '2px solid #facc15',
+              boxShadow: '0 0 20px rgba(250, 204, 21, 0.4)',
+              '@keyframes spin': {
+                '0%': { transform: 'rotate(0deg)' },
+                '100%': { transform: 'rotate(360deg)' }
+              }
+            }}
+          >
+            <WbSunnyIcon sx={{ fontSize: 44, color: '#eab308' }} />
+          </Box>
+
+          <Typography 
+            variant="subtitle1" 
+            sx={{ 
+              fontWeight: 700, 
+              color: '#0f172a',
+              letterSpacing: '-0.3px',
+              mb: 1
+            }}
+          >
+            Loading Settings
+          </Typography>
+
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: '#64748b', 
+              fontSize: '0.82rem',
+              animation: 'pulse 1.8s ease-in-out infinite',
+              '@keyframes pulse': {
+                '0%, 100%': { opacity: 0.6 },
+                '50%': { opacity: 1 }
+              }
+            }}
+          >
+            Syncing secure database settings...
+          </Typography>
+
+          {/* Bottom linear progress accent */}
+          <Box 
+            sx={{ 
+              position: 'absolute', 
+              bottom: 0, 
+              left: 0, 
+              width: '100%', 
+              height: 4, 
+              bgcolor: '#f1f5f9',
+              overflow: 'hidden'
+            }}
+          >
+            <Box 
+              sx={{ 
+                width: '40%', 
+                height: '100%', 
+                bgcolor: '#16a34a', 
+                borderRadius: '2px',
+                animation: 'loadingProgress 1.6s ease-in-out infinite',
+                '@keyframes loadingProgress': {
+                  '0%': { marginLeft: '-40%' },
+                  '100%': { marginLeft: '100%' }
+                }
+              }}
+            />
+          </Box>
+        </Box>
       </Box>
     );
   }
@@ -193,7 +296,7 @@ const HeaderImage = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={2}>
                 <TextField
                   fullWidth
                   size="small"
@@ -203,6 +306,32 @@ const HeaderImage = () => {
                   onChange={handleChange}
                   placeholder="e.g. UP"
                 />
+              </Grid>
+
+              <Grid item xs={12} sm={2} display="flex" flexDirection="column" justifyContent="center">
+                <Typography variant="caption" fontWeight="700" color="#475569" mb={0.3} display="block" sx={{ fontSize: '0.72rem', textTransform: 'uppercase' }}>
+                  Theme Color
+                </Typography>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <input
+                    type="color"
+                    name="themeColor"
+                    value={formData.themeColor || '#38761d'}
+                    onChange={(e) => setFormData({ ...formData, themeColor: e.target.value })}
+                    style={{
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '6px',
+                      width: '38px',
+                      height: '32px',
+                      padding: '2px',
+                      cursor: 'pointer',
+                      background: '#ffffff'
+                    }}
+                  />
+                  <Typography variant="caption" fontWeight="600" color="#64748b" sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                    {formData.themeColor || '#38761d'}
+                  </Typography>
+                </Box>
               </Grid>
 
               <Grid item xs={12}>
@@ -248,88 +377,119 @@ const HeaderImage = () => {
             <SectionHeader
               number="2"
               title="Company Logo (Right Header)"
-              subtitle="Printed on the top-right box of every generated PDF"
+              subtitle="Upload your transparent PNG/JPG logo to render on the top-right box"
             />
 
             <Grid container spacing={3} alignItems="center">
-              <Grid item xs={12} sm={7}>
-                <Typography variant="body2" color="#64748b" mb={2}>
-                  Upload a high quality transparent PNG or JPEG image.
-                </Typography>
-                
-                <Button
-                  variant="outlined"
-                  component="label"
-                  size="small"
-                  startIcon={<CloudUploadIcon fontSize="small" />}
+              <Grid item xs={12} sm={6} display="flex" justifyContent="center">
+                <Box
                   sx={{
-                    color: '#2e7d32',
-                    borderColor: '#a5d6a7',
+                    width: '100%',
+                    maxWidth: 320,
+                    height: 140,
+                    border: '2px dashed #cbd5e1',
                     borderRadius: '8px',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    px: 2,
-                    py: 0.8,
-                    '&:hover': { borderColor: '#2e7d32', bgcolor: '#e8f5e9' }
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    bgcolor: '#f8fafc',
+                    p: 2,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    '&:hover': { bgcolor: '#f1f5f9' },
+                    position: 'relative'
                   }}
+                  component="label"
                 >
-                  {logoFile ? logoFile.name : 'Choose Logo File'}
                   <input
                     type="file"
-                    hidden
                     accept="image/*"
+                    hidden
                     onChange={handleFileChange}
                   />
-                </Button>
-
-                {logoFile && (
-                  <Typography variant="caption" display="block" color="#2e7d32" sx={{ mt: 1, fontWeight: 700 }}>
-                    Selected: {logoFile.name}
+                  <CloudUploadIcon sx={{ fontSize: 32, color: '#64748b', mb: 1 }} />
+                  <Typography variant="body2" fontWeight="600" color="#334155">
+                    Click to upload logo image
                   </Typography>
-                )}
+                  <Typography variant="caption" color="textSecondary">
+                    transparent PNG recommended
+                  </Typography>
+                  {logoFile && (
+                    <Box sx={{ mt: 1, bgcolor: '#dcfce7', px: 1.5, py: 0.3, borderRadius: '4px', border: '1px solid #bbf7d0' }}>
+                      <Typography variant="caption" sx={{ color: '#16a34a', fontWeight: 700 }}>
+                        {logoFile.name}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
               </Grid>
 
-              <Grid item xs={12} sm={5}>
-                <Typography variant="caption" fontWeight="700" color="#475569" display="block" mb={1}>
-                  Current Active Logo:
-                </Typography>
-                <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', bgcolor: '#f8fafc', minHeight: 90, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #cbd5e1' }}>
-                  {currentImage ? (
-                    <img
-                      src={currentImage}
-                      alt="Current Header Logo"
-                      style={{ maxWidth: '100%', maxHeight: '75px', objectFit: 'contain' }}
-                    />
-                  ) : (
-                    <Typography variant="caption" color="textSecondary">No logo uploaded yet</Typography>
-                  )}
-                </Paper>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Typography variant="caption" fontWeight="700" color="#64748b" mb={1} sx={{ textTransform: 'uppercase' }}>
+                    Active Logo Preview
+                  </Typography>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      maxWidth: 220,
+                      height: 110,
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: '#ffffff',
+                      p: 1.5,
+                      boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                    }}
+                  >
+                    {currentImage ? (
+                      <Box
+                        component="img"
+                        src={currentImage}
+                        alt="Company Logo"
+                        sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                      />
+                    ) : (
+                      <Typography variant="caption" color="textSecondary">
+                        No logo active
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
               </Grid>
             </Grid>
           </Paper>
 
-          {/* Submit Button */}
+          {/* Submit Action */}
           <Box display="flex" justifyContent="flex-end" mt={3} mb={6}>
             <Button
               type="submit"
               variant="contained"
               disabled={loading}
-              startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
+              startIcon={<SaveIcon />}
               sx={{
-                bgcolor: '#2e7d32',
-                px: 3.5,
-                py: 1.2,
-                fontSize: '0.95rem',
+                bgcolor: '#16a34a',
+                color: '#ffffff',
                 fontWeight: 700,
                 borderRadius: '8px',
+                px: 4,
+                py: 1.2,
+                fontSize: '0.9rem',
                 textTransform: 'none',
-                boxShadow: '0 2px 8px rgba(46, 125, 50, 0.25)',
-                '&:hover': { bgcolor: '#1b5e20', boxShadow: '0 4px 14px rgba(46, 125, 50, 0.35)' }
+                boxShadow: 'none',
+                '&:hover': {
+                  bgcolor: '#15803d',
+                  boxShadow: 'none'
+                }
               }}
             >
-              {loading ? 'Saving Changes...' : 'Save Company Details & Logo'}
+              {loading ? 'Saving Settings...' : 'Save Configuration'}
             </Button>
           </Box>
+
         </form>
       </Box>
     </Box>

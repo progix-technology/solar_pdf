@@ -15,6 +15,10 @@ const protect = async (req, res, next) => {
 
       req.user = await User.findById(decoded.id).select('-password');
 
+      if (req.user && !req.user.isActive) {
+        return res.status(401).json({ message: 'User account is suspended' });
+      }
+
       next();
     } catch (error) {
       console.error(error);
@@ -27,4 +31,12 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+const adminOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied: Admin role required' });
+  }
+};
+
+module.exports = { protect, adminOnly };
