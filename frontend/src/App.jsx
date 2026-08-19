@@ -31,11 +31,25 @@ const AdminRoute = ({ children }) => {
   return user && user.role === 'admin' ? children : <Navigate to="/quotations" />;
 };
 
+import SplashScreen from './components/SplashScreen';
+
 function App() {
+  const [showSplash, setShowSplash] = React.useState(() => {
+    // Show splash screen once per browser session
+    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
+    return !hasSeenSplash;
+  });
+
+  const handleSplashFinish = () => {
+    sessionStorage.setItem('hasSeenSplash', 'true');
+    setShowSplash(false);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
+        {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
         <Router>
           <Routes>
             <Route path="/login" element={<Login />} />
