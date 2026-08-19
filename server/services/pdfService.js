@@ -46,9 +46,16 @@ const generatePDFBuffer = async (templateContent, data) => {
     // html2pdf renders content in a hidden div. Without this, the div inherits
     // the browser window width, causing white space on the right side of the PDF.
     const widthLockStyle = `<style>
-      html, body { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; }
+      html, body { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
       .pdf-wrapper { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; }
       .pdf-page { width: 794px !important; max-width: 794px !important; margin: 0 !important; padding: 0 !important; }
+      /* Prevent trailing blank page caused by extra whitespace/margins after last element */
+      body > *:last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+      * { page-break-after: avoid !important; }
+      table { page-break-inside: avoid !important; }
+      tr { page-break-inside: avoid !important; page-break-after: avoid !important; }
+      thead { display: table-header-group !important; }
+      tfoot { display: table-footer-group !important; }
     </style>`;
     html = html.replace('</head>', widthLockStyle + '</head>');
 
